@@ -1,0 +1,771 @@
+---
+title: "Empirical Project 4: Working in R code"
+---
+
+# Empirical Project 4 Working in R
+
+These code downloads have been constructed as supplements to the full Doing Economics projects (https://core-econ.org/doing-economics/). You'll need to download the data before running the code that follows. 
+
+## Getting started in R
+
+For this project you will need the following packages:
+
+-   `tidyverse`, to help with data manipulation
+-   `readxl`, to import an Excel spreadsheet
+-   `reshape2`, to manipulate datasets.
+
+You will also use the `ggplot2` package to produce accurate graphs, but that comes as part of the `tidyverse` package.
+
+If you need to install these packages, run the following code:
+
+```{r}
+install.packages(c("readxl", "tidyverse", "reshape2"))
+```
+
+You can import these libraries now, or when they are used in the R walk-throughs below.
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(reshape2)
+```
+
+## Part 4.1 GDP and its components as a measure of material wellbeing
+
+### R walk-through 4.1 Importing the Excel file (`.xlsx` or `.xls` format) into R
+
+First, use `setwd` to tell R where the datafile is stored. To avoid having to repeatedly use `setwd` to tell R where your files are, keep all the files you need in that folder, including the Excel sheet you just downloaded. Replace ‘YOURFILEPATH’ with the full filepath which points to the folder with your datafile. If you don’t know how to find the path to that folder, see the 'Technical Reference' section (https://tinyco.re/3407438).
+
+```{r}
+setwd("~/Dropbox/Coding/corecon")
+```
+
+Then use the function `readxl` (part of the `tidyverse` suite of packages) to import the datafile. Before importing the file into R, open the file in Excel to see how the data is organized in the spreadsheet, and note that: 
+
+-   There is a heading that we don't need, followed by a blank row.
+-   The data we need starts on row three.
+
+```{r}
+# Load the library
+library(tidyverse)
+library(readxl)
+
+# Excel filename
+UN = read_excel("Download-GDPconstant-USD-countries.xlsx",
+  # Sheet name
+  sheet = "Download-GDPconstant-USD-countr", 
+  # Number of rows to skip
+  skip = 2)
+
+head(UN)
+```
+
+[End of walk-through]
+
+
+### R walk-through 4.2 Making a frequency table
+
+We want to create a table showing how many years of `Final consumption expenditure` data are available for each country.
+
+Looking at the dataset’s current format, you can see that countries and indicators (for example, `Afghanistan` and `Final consumption expenditure`) are row variables, while year is the column variable. This data is organized in ‘wide’ format (each individual’s information is in a single row). 
+
+For many data operations and making charts it is more convenient to have indicators as column variables, so we would like `Final consumption expenditure` to be a column variable, and year to be the row variable. Each observation would represent the value of an indicator for a particular country and year. This data is organized in ‘long’ format (each individual’s information is in multiple rows). 
+
+To change data from wide to long format, we use the `melt` command from the package `reshape2`. The `melt` command is very powerful and useful, as you will find many large datasets are in wide format. In this case, it takes the data in Column 4 to the last column (these columns indicate the years) and uses them to create two new columns: one column (`variable`) contains the name of the row variable (the year) and the other column (`value`) contains the associated value. Compare `long_UN` to `wide_UN` to understand how the `melt` command works. To learn more about organizing data in R, see the R for Data Science website (https://tinyco.re/3225513).
+
+```{r}
+library(reshape2)
+
+wide_UN <- UN
+# Keep all data except for column 1 (CountryID)
+wide_UN = wide_UN[, -1]
+
+# id.vars are the names of the column variables.
+long_UN = 
+  melt(wide_UN, id.vars = c("Country", "IndicatorName"),
+  value.vars = 4:ncol(UN))
+
+head(long_UN)
+```
+
+Our new ‘long’ format dataset is called `long_UN`. During the reshaping process, a new variable called `variable` was created which contains years. We will use the `names` function to rename it as `Year`. 
+
+```{r}
+names(long_UN)[names(long_UN) == "variable"] <- "Year"
+```
+
+To create the required table, we only need `Final consumption expenditure` of each country, which we extract using the `subset` function.
+
+```{r}
+cons = subset(long_UN,
+  IndicatorName == "Final consumption expenditure")
+```
+
+Now we create the table showing the number of missing years by country, using the piping operator (`%>%`) from the `tidyverse` package. This operator allows us to perform multiple functions, one after another. 
+
+```{r}
+# Use the pipe operator (%>%) from the tidyverse package.
+# This means: use the result of the current line
+# as the first argument in the next line's function.
+
+missing_by_country = cons %>%
+  group_by(Country) %>%
+  summarize(available_years=sum(!is.na(value))) %>%
+  print()
+```
+
+Translating the code in words: Take the variable `cons` (`cons %>%`) and group the observations by country (`group_by(Country)`), then take this result (`%>%`) and produce a table (`summarize(...)`) that shows the variable `available_years` (which is the sum (`sum(...)`) of the variable `!is.na(value)`).
+
+To understand what `!is.na(value)` means, recall that `value` contains the numerical values for the variable of interest. When an observation is missing, it is recorded as `NA`. The function `is.na(value)` will return a value of 1 (or `TRUE`) if the value is missing and 0 (or `FALSE`) otherwise. We add a `!` in front since we want the function to return a 1 if the observation exists and a 0 otherwise. For R, `!` means ‘not’ so we get a 1 if the particular observation is not missing.
+
+Now we can establish how many of the 220 countries in the dataset have complete information. A dataset is complete if it has the maximum number of available observations (`max(missing_by_country$available_years)`).
+
+```{r}
+sum(missing_by_country$available_years == max(
+  missing_by_country$available_years))
+```
+
+[End of walk-through]
+
+
+### R walk-through 4.3 Creating new variables
+
+We will use Brazil, the US, and China as examples.
+
+Before we select these three countries, we will calculate the net exports (exports minus imports) for all countries, as we need that information in R walk-through 4.4. We will also shorten the names of the variables we need, to make the code easier to read.
+
+```{r}
+# Shorten the names of the variables we need
+# When a string straddles two lines of code
+# we need to wrap it into the 'strwrap' function
+
+long_UN$IndicatorName[long_UN$IndicatorName == 
+  strwrap("Household consumption expenditure (including 
+    Non-profit institutions serving households)")] <- 
+  "HH.Expenditure"
+
+long_UN$IndicatorName[long_UN$IndicatorName == 
+  "General government final consumption expenditure"] <- 
+  "Gov.Expenditure"
+
+long_UN$IndicatorName[long_UN$IndicatorName == 
+  "Final consumption expenditure"] <-
+  "Final.Expenditure"
+
+long_UN$IndicatorName[long_UN$IndicatorName == 
+  "Gross capital formation"] <-
+  "Capital"
+
+long_UN$IndicatorName[long_UN$IndicatorName == 
+  "Imports of goods and services"] <-
+  "Imports"
+
+long_UN$IndicatorName[long_UN$IndicatorName == 
+  "Exports of goods and services"] <-
+  "Exports"
+```
+
+`long_UN` still has several rows for a particular country and year (one for each indicator). We will reshape this data using the `dcast` function to ensure that we have only one row per country and per year. We then add a new column called `Net.Exports` containing the calculated net exports.
+
+```{r}
+# We need to cast (reshape) the long_UN data to a dataframe
+# We use the dcast function (used for dataframes)
+table_UN <- dcast(long_UN, Country + Year ~ IndicatorName)
+
+# Add a new column for net exports (= exports – imports)
+table_UN$Net.Exports <- 
+  table_UN[, "Exports"]-table_UN[, "Imports"]
+```
+
+Let us select our three chosen countries to check that we calculated net exports correctly.
+
+```{r}
+sel_countries = c("Brazil", "United States", "China")
+
+# Using our long format dataset, we get imports, exports, 
+# and year for these countries.
+sel_UN1 = subset(table_UN, 
+  subset = (Country %in% sel_countries), 
+  select = c("Country", "Year", "Exports",
+    "Imports", "Net.Exports"))
+
+head(sel_UN1)
+```
+
+[End of walk-through]
+
+
+### R walk-through 4.4 Plotting and annotating time series data
+
+#### Extract the relevant data
+
+We will work with the `long_UN` dataset, as the long format is well suited to produce charts with the `ggplot` package. In this example, we use the US and China (saved as the dataset `comp`). 
+
+```{r}
+# Select our chosen countries
+comp = subset(long_UN, 
+  Country %in% c("Argentina", "Chile"))
+
+# value in billion of USD
+comp$value = comp$value / 1e9
+
+comp = subset(comp, 
+  select = c("Country", "Year",
+    "IndicatorName", "value"),
+  subset = IndicatorName %in% c("Gov.Expenditure", 
+  "HH.Expenditure", "Capital", "Imports", "Exports"))
+```
+
+#### Plot a line chart
+
+We can now plot this data using the `ggplot` library.
+
+```{r}
+library(ggplot2)
+
+# ggplot allows us to build a chart step-by-step.
+pl = ggplot(subset(comp, Country == "United States"),
+  # Base chart, defining x (horizontal) and y (vertical) 
+  # axis variables
+  aes(x = Year, y = value))
+
+# Specify a line chart, with a different colour for each 
+# indicator name and line size = 1
+pl = pl + geom_line(aes(group = IndicatorName, 
+  color = IndicatorName), size = 1)
+
+# Display the chart
+pl
+```
+
+There are plenty of problems with this chart:
+
+-   we cannot read the horizontal axis, because it labels every year
+-   the vertical axis label is uninformative
+-   there is no chart title
+-   the grey (default) background makes the chart difficult to read
+-   the legend is uninformative.
+
+To improve this chart, we add features to the already existing figure `pl`. 
+
+```{r}
+pl = pl + scale_x_discrete(breaks=seq(1970, 2016, by = 10))
+pl = pl + scale_y_continuous(name="Billion US$")
+pl = pl + ggtitle("GDP components over time")
+
+# Change the legend title and labels
+pl = pl + scale_colour_discrete(name = "Components of GDP",
+  labels = c("Gross capital formation", "Exports",
+    "Government expenditure", "Household expenditure",
+    "Imports")) 
+
+pl = pl + theme_bw()
+
+pl = pl + annotate("text", x = 37, y = 850,
+  label = "Great Recession")
+
+pl
+```
+
+We can make a chart for more than one country simultaneously by repeating the code above, but without subsetting the data: 
+
+```{r}
+# Repeat all steps without subsetting the data
+
+# Base line chart
+pl = ggplot(comp, aes(x = Year, y = value, 
+  color = IndicatorName))
+pl = pl + geom_line(aes(group = IndicatorName), size = 1)
+pl = pl + scale_x_discrete(
+  breaks = seq(1970, 2016, by = 10))
+pl = pl + scale_y_continuous(name = "Billion US$")
+pl = pl + ggtitle("GDP components over time")
+pl = pl + scale_colour_discrete(name = "Component")   
+pl = pl + theme_bw()
+
+# Make a separate chart for each country
+pl = pl + facet_wrap(~Country)
+pl = pl + scale_colour_discrete(
+  name = "Components of GDP",   
+  labels = c("Gross capital formation",  
+    "Exports",
+    "Government expenditure",
+    "Household expenditure",
+    "Imports"))
+pl
+```
+
+[End of walk-through]
+
+
+### R walk-through 4.5 Calculating new variables and plotting time series data
+
+#### Calculate proportion of total GDP
+
+We will use the `comp` dataset created in R walk-through 4.4. First we will calculate net exports, as that contributes to GDP. As the data is currently in long format, we will reshape the data into wide format so that the variables we need are in separate columns instead of separate rows (using the `dcast` function, as in R walk-through 4.3), calculate net exports, then transform the data back into long format using the `melt` function. 
+
+```{r}
+# Reshape the data to wide format (indicators in columns)
+comp_wide <- dcast(comp, Country + Year ~ IndicatorName)
+
+head(comp_wide)
+```
+
+```{r}
+# Add the new column for net exports = exports – imports
+comp_wide$Net.Exports <- 
+  comp_wide[, "Exports"] - comp_wide[, "Imports"]
+
+head(comp_wide)
+```
+
+```{r}
+# Return to long format with the HH.expenditure, Capital, and Net Export variables
+comp2_wide <- 
+  subset(comp_wide, select = -c(Exports, Imports))
+
+comp2 <-
+  melt(comp2_wide, id.vars = c("Year", "Country"))
+```
+
+Now we will create a new dataframe (`props`) also containing the proportions for each GDP component (`proportion`), using the piping operator to link functions together.
+
+```{r}
+props = comp2 %>%
+  group_by(Country, Year) %>%
+  mutate(proportion = value / sum(value))
+```
+
+In words, we did the following: Take the `comp2` dataframe and create groups by country and year (for example, all indicators for China in 1970). Then create a new variable (`mutate`) called `proportion`, which divides the variable `value` of an indicator by the sum of all `value` for that group (for example, all indicators for China in 1970). The result is then saved in `props`. Look at the `props` dataframe to confirm that the above command has achieved the desired result.
+
+#### Plot a line chart
+
+Now we redo the line chart from R walk-through 4.4 using the variable `props`. 
+
+```{r}
+# Base line chart
+pl = ggplot(props, aes(x = Year, y = proportion, 
+  color = variable))
+
+pl = pl + geom_line(aes(group = variable), 
+  size = 1)
+
+pl = pl + scale_x_discrete(breaks = seq(1970, 2016,
+  by = 10))
+
+pl = pl + ggtitle("GDP component proportions over time")
+
+pl = pl + theme_bw()
+
+# Make a separate chart for each country
+pl = pl + facet_wrap(~Country)
+
+pl = pl + scale_colour_discrete(
+  name = "Components of GDP",
+  labels = c("Gross capital formation",
+    "Government expenditure",
+    "Household expenditure", 
+    "Net Exports"))
+
+pl
+```
+
+[End of walk-through]
+
+
+### R walk-through 4.6 Creating stacked bar charts
+
+#### Calculate proportion of total GDP
+
+This walk-through uses the following countries (chosen at random):
+
+-   developed countries: Germany, Japan, United States
+-   transition countries: Albania, Russian Federation, Ukraine
+-   developing countries: Brazil, China, India.
+
+The relevant data are still in the `table_UN` dataframe. Before we select these countries, we first calculate the required proportions for all countries.
+
+```{r}
+# Calculate proportions
+table_UN$p_Capital <- 
+  table_UN$Capital / 
+  (table_UN$Capital +
+    table_UN$Final.Expenditure +
+    table_UN$Net.Exports)
+
+table_UN$p_FinalExp <-
+  table_UN$Final.Expenditure / 
+  (table_UN$Capital +
+    table_UN$Final.Expenditure +
+    table_UN$Net.Exports)
+
+table_UN$p_NetExports <-
+  table_UN$Net.Exports /
+  (table_UN$Capital +
+    table_UN$Final.Expenditure + 
+    table_UN$Net.Exports)
+
+sel_countries <- 
+  c("Germany", "Japan", "United States",
+    "Albania", "Russian Federation", "Ukraine",
+    "Brazil", "China", "India")
+
+# Using our long format dataset, we select imports, 
+# exports, and year for our chosen countries in 2015.
+
+# Select the columns we need
+sel_2015 <- 
+  subset(table_UN, subset =
+    (Country %in% sel_countries) & (Year == 2015),
+    select = c("Country", "Year", "p_FinalExp",
+      "p_Capital", "p_NetExports"))
+```
+
+#### Plot a stacked bar chart
+
+Now let's create the bar chart.
+
+```{r}
+# Reshape the table into long format, then use ggplot
+sel_2015_m <- melt(sel_2015, id.vars = 
+  c("Year", "Country"))
+
+g <- ggplot(sel_2015_m, 
+  aes(x = Country, y = value, fill = variable)) + 
+  geom_bar(stat = "identity") + coord_flip() +
+  ggtitle("GDP component proportions in 2015") +
+  scale_fill_discrete(name = "Components of GDP",
+  labels = c("Final expenditure",
+    "Gross capital formation",
+    "Net Exports")) +
+  theme_bw()
+
+plot(g)
+```
+
+Note that even when a country has a trade deficit (proportion of net exports < 0), the proportions will add up to 1, but the proportions of final expenditure and capital will add up to more than 1. 
+
+We have not yet ordered the countries so that they form the pre-specified groups. To achieve this, we need to explicitly impose an ordering on the `Country` variable using the `factor` function. The countries will be ordered in the same order we used to define `sel_countries`. 
+
+```{r}
+# Impose the order in the sel_countries object, then use ggplot
+sel_2015_m$Country <- 
+  factor(sel_2015_m$Country, levels = sel_countries)
+
+g <- ggplot(sel_2015_m, 
+  aes(x = Country, y = value, fill = variable)) +
+  geom_bar(stat = "identity") + coord_flip() + 
+  ggtitle("GDP component proportions in 2015 (ordered)") + 
+  scale_fill_discrete(name = "Components of GDP", 
+  labels = c("Final expenditure",
+    "Gross capital formation",
+    "Net Exports")) +
+  theme_bw()
+
+plot(g)
+```
+
+[End of walk-through]
+
+## Part 4.2 The HDI as a measure of wellbeing
+
+### R walk-through 4.7 Calculating the HDI
+
+We will use `read_excel` to import the data file, which we saved as ‘HDR_data.xlsx’ in our working directory. Before importing, look at the Excel file so that you understand its structure and how it corresponds to the code options used below. We will save the imported data as the dataframe `HDR2018`.
+
+```{r}
+# File path
+# HDR2018 <- read_excel("HDR_data.xlsx",
+HDR2018 <- read_excel("hdro_statistical_data_table_1.xlsx",
+  # Worksheet to import
+  sheet = "Table 1",
+  # Number of rows to skip
+  skip = 7)
+
+head(HDR2018)
+```
+
+```{r}
+str(HDR2018)
+```
+
+Looking at the `HDR` dataframe, there are rows that have information that isn’t data (for example, all the rows with an 'NA' in the first column), as well as variables/columns that do not contain data (for example, most columns beginning with an ‘X_’, though columns labelled `X_1` and `X_2` contain the HDI rank and the country names respectively).
+
+Cleaning up the dataframe can be easier to do in Excel by deleting irrelevant rows and columns, but one advantage of doing it in R is replicability. Suppose in a year’s time you carried out the analysis again with an updated spreadsheet containing new information. If you had done the cleaning in Excel, you would have to redo it from scratch, but if you had done it in R, you can simply rerun the code below. 
+
+Firstly, we eliminate rows that do not have any numbers in the `HDI rank` column (or `X_1` column).
+
+```{r}
+# Rename the first column, currently named X_1
+names(HDR2018)[1] <- "HDI.rank"
+
+# Rename the second column, currently named X_2 
+names(HDR2018)[2] <- "Country"
+
+# Rename the last column, which contains the 2014 rank
+names(HDR2018)[names(HDR2018) == "HDI rank"] <- 
+  "HDI.rank.2014"
+
+# Eliminate the row that contains the column title
+HDR2018 <- subset(HDR2018,
+  !is.na(HDI.rank) & HDI.rank != "HDI rank")
+```
+
+Then we eliminate columns that contain notes in the original spreadsheet (names starting with ‘X_’).
+
+```{r}
+# Check which variables do NOT (!) start with X_
+sel_columns <- !startsWith(names(HDR2018), "X_")
+
+# Select the columns that do not start with X_
+HDR2018 <- subset(HDR2018, select = sel_columns)
+
+str(HDR2018)
+```
+
+Let’s change some of the long variable names (those in columns 3–8) to shorter ones. 
+
+```{r}
+names(HDR2018)[3] <- "HDI"
+names(HDR2018)[4] <- "LifeExp"
+names(HDR2018)[5] <- "ExpSchool"
+names(HDR2018)[6] <- "MeanSchool"
+names(HDR2018)[7] <- "GNI.capita"
+names(HDR2018)[8] <- "GNI.HDI.rank"
+```
+
+Looking at the structure of the data, we see that R thinks that all the data are `chr` (character or text variables) because the original datafile contained non-numerical entries (these rows have now been deleted). Apart from the `Country` variable, which we want to be a factor variable (containing categories), all variables should be numeric. 
+
+```{r}
+HDR2018$HDI.rank <- as.numeric(HDR2018$HDI.rank)
+HDR2018$Country <- as.factor(HDR2018$Country)
+HDR2018$HDI <- as.numeric(HDR2018$HDI)
+HDR2018$LifeExp <- as.numeric(HDR2018$LifeExp)
+HDR2018$ExpSchool <- as.numeric(HDR2018$ExpSchool)
+HDR2018$MeanSchool <- as.numeric(HDR2018$MeanSchool)
+HDR2018$GNI.capita <- as.numeric(HDR2018$GNI.capita)
+HDR2018$GNI.HDI.rank <- as.numeric(HDR2018$GNI.HDI.rank)
+HDR2018$HDI.rank.2014 <- as.numeric(HDR2018$HDI.rank.2014)
+str(HDR2018)
+```
+
+Now we have a nice clean dataset that we can work with.
+
+We start by calculating the three indices, using the information given. For the education index we calculate the index for expected and mean schooling separately, then take the arithmetic mean to get `I.Education`. As some mean schooling observations exceed the specified ‘maximum’ value of 18, the calculated index values would be larger than 1. To avoid this, we use `pmin` to replace these observations with 18 to obtain an index value of 1.
+
+```{r}
+
+HDR2018$I.Health <- 
+  (HDR2018$LifeExp - 20) / (85 - 20)
+
+HDR2018$I.Education <- 
+  ((pmin(HDR2018$ExpSchool, 18) - 0) / 
+  (18 - 0) + (HDR2018$MeanSchool - 0) / 
+  (15 - 0)) / 2
+
+HDR2018$I.Income <-
+  (log(HDR2018$GNI.capita) - log(100)) /
+  (log(75000) - log(100))
+
+HDR2018$HDI.calc <- 
+  (HDR2018$I.Health * HDR2018$I.Education * 
+    HDR2018$I.Income)^(1/3)
+```
+
+Now we can compare the `HDI` given in the table and our calculated HDI.
+
+```{r}
+HDR2018[, c("HDI", "HDI.calc")]
+```
+[End of walk-through]
+
+### R walk-through 4.8 Creating your own HDI
+
+#### Merge data and calculate alternative indices
+
+This example uses the following indicators:
+
+-   Education: Literacy rate, adult (% ages 15 and older); Gross enrolment ratio, tertiary (% of tertiary school-age population); Primary school teachers trained to teach (%)
+-   Health: Child malnutrition, stunting (moderate or severe) (% under age 5); Mortality rate, female adult (per 1,000 people); Mortality rate, male adult (per 1,000 people).
+
+First, we import the data and check that it has been imported correctly. You can see that each row represents a different country and indicator (`indicator_name`), and each column represents a different year.
+
+```{r}
+# Filename
+allHDR2018 <- read_excel("2018_all_indicators.xlsx",
+  # Sheet to import
+  sheet = "Data")
+
+head(allHDR2018)
+```
+
+```{r}
+str(HDR2018)
+```
+
+Then we follow the same process as in R walk-through 4.7—getting the data for the indicators we want, reshaping it so that each indicator is in a different column (instead of a different row), and giving each indicator a shorter name. We will save this data as `HDR2018w`. Note that the variable `9999` refers to the latest year available, or the average taken over a range of years (the Excel file contains information on which year(s) were used).
+
+```{r}
+indicators <- c(
+  "Literacy rate, adult (% ages 15 and older)", 
+  "Gross enrolment ratio, tertiary (% of tertiary school-age population)", 
+  "Primary school teachers trained to teach (%)", 
+  "Child malnutrition, stunting (moderate or severe) (% under age 5)", 
+  "Mortality rate, female adult (per 1,000 people)", 
+  "Mortality rate, male adult (per 1,000 people)"
+
+HDR2018l <- allHDR2018[
+  allHDR2018$indicator_name %in% indicators, ]
+
+HDR2018l <- subset(HDR2018l, 
+  # Indicate which variables to keep.
+  select = c("indicator_name", "country_name", "9999"))
+
+HDR2018w <- dcast(HDR2018l, country_name ~ indicator_name, 
+  value.var = "9999")
+names(HDR2018.Edu)[1] <- "HDI.rank"
+
+# Rename the second column, currently named 'Very high …'
+
+names(HDR2018w)[1] <- "Country"
+names(HDR2018w)[2] <- "Child.Malnu"
+names(HDR2018w)[3] <- "Tert.Enrol"
+names(HDR2018w)[4] <- "Adult.Lit"
+names(HDR2018w)[5] <- "Mortality.Female"
+names(HDR2018w)[6] <- "Mortality.Male"
+names(HDR2018w)[7] <- "Prim.Teacher"
+
+str(HDR2018w)
+```
+
+Looking at the structure (`str( )`), we can see that all indicators are correctly in numerical (`num`) format.
+
+Before we can calculate indices, we need to set minimum and maximum values, which we base on the minimum and maximum values in the sample.
+
+```{r}
+summary(HDR2018w)
+```
+
+As we want the observations to be inside the [min, max] interval, we choose the following [min, max] pairs for the education indicators: Adult.Lit: [15, 100], Tert.Enrol: [2, 122], and Prim.Teacher: [15, 100]. You may want to research why there can be countries with a tertiary enrolment ratio larger than 100%.
+
+Let’s calculate the alternative education index (`I.Education.alt`), taking an arithmetic average just as we did for `I.Education` in R walk-through 4.7.
+
+```{r}
+HDR2018w$I.Adult.Lit <-
+  (HDR2018w$Adult.Lit-15) / (100-15)
+
+HDR2018w$I.Tert.Enrol<-
+  (HDR2018w$Tert.Enrol-2) / (122-2) 
+
+HDR2018w$I.Prim.Teacher <-
+  (HDR2018w$Prim.Teacher-15) / (100-15)
+  
+HDR2018w$I.Education.alt <- 
+  (HDR2018w$I.Adult.Lit +
+    HDR2018w$I.Tert.Enrol + 
+    HDR2018w$I.Prim.Teacher) / 3
+
+summary(HDR2018w$I.Education.alt)
+```
+
+You can see that we could not calculate this index for 113 countries, as at least one of the three values was missing.
+
+We repeat this procedure to calculate an alternative health index (`I.Health.alt`). The [min, max] pairs we use are: Child.Malnu: [1, 56], Mortality.Female: [34, 463], Mortality.Male: [63, 555].
+
+```{r}
+HDR2018w$I.Child.MalNu <-
+  (HDR2018w$Child.MalNu - 1) /
+  (56 - 1)
+
+HDR2018w$I.Mortality.Female <-
+  (HDR2018w$Mortality.Female - 34) /
+  (463 - 34) 
+
+HDR2018w$I.Mortality.Male <-
+  (HDR2018w$Mortality.Male - 63) /
+  (555 - 63)
+
+HDR2018w$I.Health.alt <-
+  (HDR2018w$I.Child.MalNu + 
+  HDR2018w$I.Mortality.Female + 
+  HDR2018w$I.Mortality.Male) / 3
+
+# Note that these are all 'bad' indicators in the sense that higher numbers indicate worse outcomes.
+
+# For all other indicators, larger numbers mean better outcomes. So we need to 'flip' the values of this indicator.
+
+HDR2018w$I.Health.alt <- (1 - HDR2018w$I.Health.alt)
+
+summary(HDR2018w$I.Health.alt)
+```
+
+Now we use the `merge` function to merge this variable into our existing `HDR2018` dataframe.
+
+```{r}
+HDR2018 <- merge(HDR2018, HDR2018w)
+```
+
+#### Calculate an alternative HDI
+
+Looking at `HDR2018`, you will see that alternative health and education indices have been added. Now we are in a position to calculate our own HDI (`HDI.own`).
+
+```{r}
+HDR2018$HDI.own <- 
+  (HDR2018$I.Health.alt *
+    HDR2018$I.Education.alt *
+    HDR2018$I.Income)^(1/3) 
+
+summary(HDR2018$HDI.own)
+```
+
+We have a substantial number of missing observations, leaving us with around 70 countries for which we could calculate the alternative HDI.
+
+#### Calculate ranks
+
+To compare the ranks of the two indices (the original HDI and our alternative HDI), we should only rank the countries that have observations for both indices. We will create a dataframe called `HDR2018_sub` that contains this subset of countries.
+
+```{r}
+HDR2018_sub <- 
+  subset(HDR2018, !is.na(HDI) & !is.na(HDI.own)) 
+```
+
+Let's calculate the rank for our index. The `rank` function will assign rank 1 to the smallest index value, but we want the largest (best) index value to have the rank 1. We add `-` in front of the variable name to obtain the desired effect.
+
+```{r}
+HDR2018_sub$HDI.own.rank <-
+  rank(-HDR2018_sub$HDI.own, na.last = "keep") 
+HDR2018_sub$HDI.rank <-
+  rank(-HDR2018_sub$HDI, na.last = "keep") 
+```
+
+Now we will use the `ggplot` function to make a scatterplot comparing the rank of the HDI with that of our own index.
+
+```{r}
+ggplot(HDR2018_sub, aes(x = HDI.rank, y = HDI.own.rank)) +
+  # Use solid circles
+  geom_point(shape = 16) +
+  labs(y = "Alternative HDI rank", x = "HDI rank") +
+  ggtitle("Comparing ranks between HDI and HDI.own") +
+  theme_bw()
+```
+
+You can see that in general the rankings are similar. If they were identical, the points in the scatterplot would form a straight upward-sloping line. They do not form a straight line, but there is a very strong positive correlation. There are, however, a few countries where the alternative definitions have caused a change in ranking, so let's use the `head` and `tail` functions to find out which countries these are.
+
+```{r}
+temp <- HDR2018_sub[
+  order(HDR2018_sub$HDI.rank -
+  HDR2018_sub$HDI.own.rank),
+  # Show selected variables 
+  c("Country", "HDI.rank", "HDI.own.rank")]
+
+# Show the countries with the largest fall in rank
+head(temp, 5)
+```
+
+```{r}
+# Show the countries with the largest increase in rank
+tail(temp, 5)
+```
+
+[End of walk-through]
+
