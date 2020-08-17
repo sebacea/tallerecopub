@@ -1,0 +1,51 @@
+---
+title: "Menos bienestar por bienestar"
+author: ""
+date: "Agosto 2020"
+output: 
+  bookdown::pdf_document2:
+    toc: false
+urlcolor: blue
+bibliography: referencias.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Datos preparados en función de data frame prop del Proyecto 4 Core Econ
+load("data.Rdata")
+```
+
+Se habla de un "Interés en aumentar bienestar económico" (ver [anti-introducción](https://www.youtube.com/watch?v=rvSFTelGTuo&feature=youtu.be&hd=1)) cuando no se sabe bien qué es el bienestar. En efecto, el bienestar individual es una percepción existencial que ocurre en el interior de cada ser humano. Me atrevo a decir que es una percepciónde una gran importancia que ocurre en el silencio del individualismo en contraste con la sociedad donde se vive. Esto me hace acordar a una referencia hecha a [@nietzsche_asi_1997] [en una entrevista del 2013.](https://www.youtube.com/watch?v=m6I_cXZy9bo)
+
+En efecto, en la siguiente figura \@ref(fig:contrasteARCL) podemos ver como el bienestar medido a través del PIB (desde el año `r min(as.numeric(as.character(comp$Year)))` hasta el `r max(as.numeric(as.character(comp$Year)))`) puede tener orígenes tan disímiles como contrastes enormes entre diferentes sociedades.
+
+
+```{r contrasteARCL, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="GDP Argentina y Chile. Fuente: Naciones Unidas", out.width='65%', fig.align='center'}
+# Base line chart
+library(ggplot2)
+# Base line chart
+pl = ggplot(comp, aes(x = Year, y = value, 
+  color = IndicatorName))
+pl = pl + geom_line(aes(group = IndicatorName), size = 1)
+pl = pl + scale_x_discrete(
+  breaks = seq(1970, 2016, by = 10))
+pl = pl + scale_y_continuous(name = "Billion US$")
+pl = pl + ggtitle("GDP components over time")
+pl = pl + scale_colour_discrete(name = "Component")   
+pl = pl + theme_bw()
+
+# Make a separate chart for each country
+pl = pl + facet_wrap(~Country)
+pl = pl + scale_colour_discrete(
+  name = "Components of GDP",   
+  labels = c("Gross capital formation",  
+    "Exports",
+    "Government expenditure",
+    "Household expenditure",
+    "Imports"))
+pl
+```
+
+Viendo y contrastando estas dos sociedades, ¿necesariamente en una habrá más bienestar que en la otra?, ¿son comparables las escalas sin un _per capita_?
+
+## Referencias
