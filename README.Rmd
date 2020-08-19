@@ -23,3 +23,5 @@ knitr::opts_chunk$set(echo = TRUE)
   
 ## Semana 2
   
+- Revisamos faltante Semana 1
+- [Desigualdad en América Latina](Semana2/WelfareIneqLatam.Rmd)

@@ -2,6 +2,8 @@
 title: "Empirical Project 4: Working in R code"
 ---
 
+<!-- Fuente original código: https://www.core-econ.org/doing-economics/book/text/04-03.html -->
+
 # Empirical Project 4 Working in R
 
 These code downloads have been constructed as supplements to the full Doing Economics projects (https://core-econ.org/doing-economics/). You'll need to download the data before running the code that follows. 
@@ -18,7 +20,7 @@ You will also use the `ggplot2` package to produce accurate graphs, but that com
 
 If you need to install these packages, run the following code:
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 install.packages(c("readxl", "tidyverse", "reshape2"))
 ```
 
@@ -224,7 +226,7 @@ We can now plot this data using the `ggplot` library.
 library(ggplot2)
 
 # ggplot allows us to build a chart step-by-step.
-pl = ggplot(subset(comp, Country == "United States"),
+pl = ggplot(subset(comp, Country == "Chile"),
   # Base chart, defining x (horizontal) and y (vertical) 
   # axis variables
   aes(x = Year, y = value))
@@ -471,7 +473,7 @@ plot(g)
 
 ### R walk-through 4.7 Calculating the HDI
 
-We will use `read_excel` to import the data file, which we saved as ‘HDR_data.xlsx’ in our working directory. Before importing, look at the Excel file so that you understand its structure and how it corresponds to the code options used below. We will save the imported data as the dataframe `HDR2018`.
+We will use `read_excel` to import the data file, which we saved as ‘hdro_statistical_data_table_1.xlsx’ in our working directory. Before importing, look at the Excel file so that you understand its structure and how it corresponds to the code options used below. We will save the imported data as the dataframe `HDR2018`.
 
 ```{r}
 # File path

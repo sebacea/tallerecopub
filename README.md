@@ -21,3 +21,6 @@ Taller de Economía del Bienestar
         Unidas](Semana1/Download-GDPconstant-USD-countries.xlsx)
 
 ## Semana 2
+
+  - Revisamos faltante Semana 1
+  - [Desigualdad en América Latina](Semana2/WelfareIneqLatam.Rmd)

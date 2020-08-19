@@ -1,0 +1,50 @@
+---
+title: "Latin America Inequality/Product"
+output: html_notebook
+---
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(WDI)
+# En caso de necesitar buscar una variable
+# WDIsearch('gini')
+countries=c("CL","BR","HN","PA","CO","PY","MX","CR","GT","VE","NI","DO","JM","EC","BO","PE","AR","HT","UY","SV")
+df.wb <- WDI(indicator=c("SI.POV.GINI","NY.GDP.PCAP.CD"), country=countries, start=1994, end=2018)
+library(dplyr)
+library(zoo)
+# Reemplazamos ultimo valor conocido
+dfcomp<-df.wb %>% group_by(country) %>% mutate(NY.GDP.PCAP.CD = na.locf0(NY.GDP.PCAP.CD), SI.POV.GINI= na.locf0(SI.POV.GINI)) %>% ungroup
+df<-dfcomp %>% 
+  select("country","NY.GDP.PCAP.CD","SI.POV.GINI", "year") %>%
+  filter(year == 2018)
+df$year<-NULL
+df$gdprank<-rank(-df$NY.GDP.PCAP.CD)
+df$ginirank<-rank(-df$SI.POV.GINI)
+df$rank<-(df$gdprank+df$ginirank)/2
+library(DT)
+datatable(df)
+```
+
+# GINI Plot
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=4}
+library(plotly)
+plot_ly(dfcomp, x = ~year, y = ~SI.POV.GINI, type = 'scatter', mode = 'lines', color = ~country) %>% group_by(country)
+```
+
+# GDP Plot
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=4}
+plot_ly(dfcomp, x = ~year, y = ~NY.GDP.PCAP.CD, type = 'scatter', mode = 'lines', color = ~country) %>% group_by(country)
+```
+
+```{r eval=FALSE, include=FALSE}
+aux<-dfcomp %>%
+    group_by(year) %>%
+    mutate(gini_rank = order(SI.POV.GINI))
+View(aux %>% filter(year==2014))
+View(dfcomp %>% filter(year==2014))
+gini_rank = data.frame(dfcomp$country[which(dfcomp$year==2014)],order(dfcomp$SI.POV.GINI[which(dfcomp$year==2014)]))
+```
+
