@@ -1,0 +1,95 @@
+---
+title: "Análiss Bienestar Chile"
+author: "Cea"
+date: "4/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+# El siguiente script genera el data frame comp
+# source("ETL.R")
+load("comp.RData")
+```
+
+## Análisis indicadores de Chile
+
+```{r echo=FALSE}
+library(ggplot2)
+
+# ggplot allows us to build a chart step-by-step.
+pl = ggplot(subset(comp, Country == "Chile"),
+  # Base chart, defining x (horizontal) and y (vertical) 
+  # axis variables
+  aes(x = Year, y = value))
+
+# Specify a line chart, with a different colour for each 
+# indicator name and line size = 1
+pl = pl + geom_line(aes(group = IndicatorName, 
+  color = IndicatorName), size = 1)
+
+pl = pl + scale_x_discrete(breaks=seq(1970, 2016, by = 10),name="Años")
+pl = pl + scale_y_continuous(name="Billones US$")
+pl = pl + ggtitle("Componentes PIB")
+
+# Change the legend title and labels
+pl = pl + scale_colour_discrete(name = "Componentes",
+  labels = c("Gasto Hogares", "Gasto Público")) 
+
+pl = pl + theme_bw()
+
+# pl = pl + annotate("text", x = 37, y = 100,
+  # label = "Great Recession")
+
+# Display the chart
+pl
+```
+
+
+## Indicador personalizado
+
+```{r}
+comp_wide <- dcast(comp, Country + Year ~ IndicatorName)
+
+# Creamos nueva variable
+comp_wide$Bienestar <- 
+  0.5*comp_wide[, "HH.Expenditure"] + 0.5*comp_wide[, "Gov.Expenditure"]
+
+comp2_wide <- 
+  subset(comp_wide)
+
+comp2 <-
+  melt(comp2_wide, id.vars = c("Year", "Country"))
+```
+
+```{r}
+# ggplot allows us to build a chart step-by-step.
+pl = ggplot(subset(comp2, Country == "Chile"),
+  # Base chart, defining x (horizontal) and y (vertical) 
+  # axis variables
+  aes(x = Year, y = value))
+
+# Specify a line chart, with a different colour for each 
+# indicator name and line size = 1
+pl = pl + geom_line(aes(group = variable, 
+  color = variable), size = 1)
+
+pl = pl + scale_x_discrete(breaks=seq(1970, 2016, by = 10),name="Años")
+pl = pl + scale_y_continuous(name="Billones US$")
+pl = pl + ggtitle("Componentes PIB")
+
+# Change the legend title and labels
+pl = pl + scale_colour_discrete(name = "Componentes",
+  labels = c("Gasto Hogares", "Gasto Público","Bienestar")) 
+
+pl = pl + theme_bw()
+
+# pl = pl + annotate("text", x = 37, y = 100,
+  # label = "Great Recession")
+
+# Display the chart
+pl
+```
+
