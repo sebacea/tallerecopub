@@ -39,7 +39,7 @@ library(reshape2)
 First, use `setwd` to tell R where the datafile is stored. To avoid having to repeatedly use `setwd` to tell R where your files are, keep all the files you need in that folder, including the Excel sheet you just downloaded. Replace ‘YOURFILEPATH’ with the full filepath which points to the folder with your datafile. If you don’t know how to find the path to that folder, see the 'Technical Reference' section (https://tinyco.re/3407438).
 
 ```{r}
-setwd("~/Dropbox/Coding/corecon")
+setwd("/cloud/project/Semana1")
 ```
 
 Then use the function `readxl` (part of the `tidyverse` suite of packages) to import the datafile. Before importing the file into R, open the file in Excel to see how the data is organized in the spreadsheet, and note that: 
