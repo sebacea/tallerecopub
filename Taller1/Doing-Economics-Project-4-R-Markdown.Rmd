@@ -600,8 +600,10 @@ This example uses the following indicators:
 First, we import the data and check that it has been imported correctly. You can see that each row represents a different country and indicator (`indicator_name`), and each column represents a different year.
 
 ```{r}
+url3 <- 'https://github.com/git-mischa/shiny-app/raw/master/data/2018_all_indicators.xlsx'
+GET(url3, write_disk(tf3 <- tempfile(fileext = ".xlsx")))
 # Filename
-allHDR2018 <- read_excel("../Taller1/2018_all_indicators.xlsx",
+allHDR2018 <- read_excel(tf3,
   # Sheet to import
   sheet = "Data")
 
