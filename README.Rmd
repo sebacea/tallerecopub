@@ -1,5 +1,5 @@
 ---
-title: "Taller de Economía del Bienestar"
+title: "Talleres Finanzas Sostenibles
 output: github_document
 ---
 
@@ -15,13 +15,14 @@ knitr::opts_chunk$set(echo = TRUE)
   - [Base de datos figura](Plantillas/data.RData)
   - [PDF resultante del compilar archivo fuente](/Plantillas/Argumento.pdf)
 
-## Semana 1 
+## Taller 1 
 
-- Revisamos el [proyecto 4](https://www.core-econ.org/doing-economics/book/text/04-03.html) de [coreecon](http://core-econ.org)
+- [Proyecto 4](https://www.core-econ.org/doing-economics/book/text/04-03.html) de [coreecon](http://core-econ.org)
   - [Script en formato Markdown](Semana1/Doing-Economics-Project-4-R-Markdown.Rmd)
   - [Datos Naciones Unidas](Semana1/Download-GDPconstant-USD-countries.xlsx)
   
-## Semana 2
+## Taller 2
   
-- Revisamos faltante Semana 1
+- [Proyecto 5](https://www.core-econ.org/doing-economics/book/text/05-03.html) de [coreecon](http://core-econ.org)
+  - [Script en formato Markdown por traducir]()
 - [Desigualdad en América Latina](Semana2/WelfareIneqLatam.Rmd)
