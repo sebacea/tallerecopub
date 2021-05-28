@@ -15,13 +15,14 @@ For this project you will need the following packages:
 -   `tidyverse`, to help with data manipulation
 -   `readxl`, to import an Excel spreadsheet
 -   `reshape2`, to manipulate datasets.
+-   `httr`, to access data directly from the web
 
 You will also use the `ggplot2` package to produce accurate graphs, but that comes as part of the `tidyverse` package.
 
 If you need to install these packages, run the following code:
 
 ```{r eval=FALSE, include=FALSE}
-install.packages(c("readxl", "tidyverse", "reshape2"))
+install.packages(c("readxl", "tidyverse", "reshape2","httr"))
 ```
 
 You can import these libraries now, or when they are used in the R walk-throughs below.
@@ -39,7 +40,7 @@ library(reshape2)
 First, use `setwd` to tell R where the datafile is stored. To avoid having to repeatedly use `setwd` to tell R where your files are, keep all the files you need in that folder, including the Excel sheet you just downloaded. Replace ‘YOURFILEPATH’ with the full filepath which points to the folder with your datafile. If you don’t know how to find the path to that folder, see the 'Technical Reference' section (https://tinyco.re/3407438).
 
 ```{r}
-setwd("/cloud/project/Semana1")
+setwd("../Taller1")
 ```
 
 Then use the function `readxl` (part of the `tidyverse` suite of packages) to import the datafile. Before importing the file into R, open the file in Excel to see how the data is organized in the spreadsheet, and note that: 
@@ -52,8 +53,12 @@ Then use the function `readxl` (part of the `tidyverse` suite of packages) to im
 library(tidyverse)
 library(readxl)
 
+library(httr)
+url1 <- 'https://unstats.un.org/unsd/amaapi/api/file/6'
+GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
+
 # Excel filename
-UN = read_excel("Download-GDPconstant-USD-countries.xlsx",
+UN = read_excel(tf,
   # Sheet name
   sheet = "Download-GDPconstant-USD-countr", 
   # Number of rows to skip
@@ -263,7 +268,7 @@ pl = pl + scale_colour_discrete(name = "Components of GDP",
 
 pl = pl + theme_bw()
 
-pl = pl + annotate("text", x = 37, y = 850,
+pl = pl + annotate("text", x = 37, y = 100,
   label = "Great Recession")
 
 pl
@@ -382,7 +387,7 @@ pl
 This walk-through uses the following countries (chosen at random):
 
 -   developed countries: Germany, Japan, United States
--   transition countries: Albania, Russian Federation, Ukraine
+-   transition countries: Argentina, Russian Federation, Chile
 -   developing countries: Brazil, China, India.
 
 The relevant data are still in the `table_UN` dataframe. Before we select these countries, we first calculate the required proportions for all countries.
@@ -409,7 +414,7 @@ table_UN$p_NetExports <-
 
 sel_countries <- 
   c("Germany", "Japan", "United States",
-    "Albania", "Russian Federation", "Ukraine",
+    "Argentina", "Russian Federation", "Chile",
     "Brazil", "China", "India")
 
 # Using our long format dataset, we select imports, 
@@ -473,22 +478,22 @@ plot(g)
 
 ### R walk-through 4.7 Calculating the HDI
 
-We will use `read_excel` to import the data file, which we saved as ‘hdro_statistical_data_table_1.xlsx’ in our working directory. Before importing, look at the Excel file so that you understand its structure and how it corresponds to the code options used below. We will save the imported data as the dataframe `HDR2018`.
+We will use `read_excel` to import the data file, which we saved as ‘hdro_statistical_data_table_1.xlsx’ in our working directory. Before importing, look at the Excel file so that you understand its structure and how it corresponds to the code options used below. We will save the imported data as the dataframe `HDR2019`.
 
 ```{r}
-# File path
-# HDR2018 <- read_excel("HDR_data.xlsx",
-HDR2018 <- read_excel("hdro_statistical_data_table_1.xlsx",
+url2 <- 'http://hdr.undp.org/sites/default/files/2020_statistical_annex_table_1.xlsx'
+GET(url2, write_disk(tf2 <- tempfile(fileext = ".xlsx")))
+HDR2019 <- read_excel(tf2,
   # Worksheet to import
   sheet = "Table 1",
   # Number of rows to skip
-  skip = 7)
+  skip = 2)
 
-head(HDR2018)
+head(HDR2019)
 ```
 
 ```{r}
-str(HDR2018)
+str(HDR2019)
 ```
 
 Looking at the `HDR` dataframe, there are rows that have information that isn’t data (for example, all the rows with an 'NA' in the first column), as well as variables/columns that do not contain data (for example, most columns beginning with an ‘X_’, though columns labelled `X_1` and `X_2` contain the HDI rank and the country names respectively).
@@ -499,17 +504,17 @@ Firstly, we eliminate rows that do not have any numbers in the `HDI rank` column
 
 ```{r}
 # Rename the first column, currently named X_1
-names(HDR2018)[1] <- "HDI.rank"
+names(HDR2019)[1] <- "HDI.rank"
 
 # Rename the second column, currently named X_2 
-names(HDR2018)[2] <- "Country"
+names(HDR2019)[2] <- "Country"
 
 # Rename the last column, which contains the 2014 rank
-names(HDR2018)[names(HDR2018) == "HDI rank"] <- 
+names(HDR2019)[names(HDR2019) == "HDI rank"] <- 
   "HDI.rank.2014"
 
 # Eliminate the row that contains the column title
-HDR2018 <- subset(HDR2018,
+HDR2019 <- subset(HDR2019,
   !is.na(HDI.rank) & HDI.rank != "HDI rank")
 ```
 
@@ -517,38 +522,38 @@ Then we eliminate columns that contain notes in the original spreadsheet (names 
 
 ```{r}
 # Check which variables do NOT (!) start with X_
-sel_columns <- !startsWith(names(HDR2018), "X_")
+sel_columns <- !startsWith(names(HDR2019), "X_")
 
 # Select the columns that do not start with X_
-HDR2018 <- subset(HDR2018, select = sel_columns)
+HDR2019 <- subset(HDR2019, select = sel_columns)
 
-str(HDR2018)
+str(HDR2019)
 ```
 
 Let’s change some of the long variable names (those in columns 3–8) to shorter ones. 
 
 ```{r}
-names(HDR2018)[3] <- "HDI"
-names(HDR2018)[4] <- "LifeExp"
-names(HDR2018)[5] <- "ExpSchool"
-names(HDR2018)[6] <- "MeanSchool"
-names(HDR2018)[7] <- "GNI.capita"
-names(HDR2018)[8] <- "GNI.HDI.rank"
+names(HDR2019)[3] <- "HDI"
+names(HDR2019)[4] <- "LifeExp"
+names(HDR2019)[5] <- "ExpSchool"
+names(HDR2019)[6] <- "MeanSchool"
+names(HDR2019)[7] <- "GNI.capita"
+names(HDR2019)[8] <- "GNI.HDI.rank"
 ```
 
 Looking at the structure of the data, we see that R thinks that all the data are `chr` (character or text variables) because the original datafile contained non-numerical entries (these rows have now been deleted). Apart from the `Country` variable, which we want to be a factor variable (containing categories), all variables should be numeric. 
 
 ```{r}
-HDR2018$HDI.rank <- as.numeric(HDR2018$HDI.rank)
-HDR2018$Country <- as.factor(HDR2018$Country)
-HDR2018$HDI <- as.numeric(HDR2018$HDI)
-HDR2018$LifeExp <- as.numeric(HDR2018$LifeExp)
-HDR2018$ExpSchool <- as.numeric(HDR2018$ExpSchool)
-HDR2018$MeanSchool <- as.numeric(HDR2018$MeanSchool)
-HDR2018$GNI.capita <- as.numeric(HDR2018$GNI.capita)
-HDR2018$GNI.HDI.rank <- as.numeric(HDR2018$GNI.HDI.rank)
-HDR2018$HDI.rank.2014 <- as.numeric(HDR2018$HDI.rank.2014)
-str(HDR2018)
+HDR2019$HDI.rank <- as.numeric(HDR2019$HDI.rank)
+HDR2019$Country <- as.factor(HDR2019$Country)
+HDR2019$HDI <- as.numeric(HDR2019$HDI)
+HDR2019$LifeExp <- as.numeric(HDR2019$LifeExp)
+HDR2019$ExpSchool <- as.numeric(HDR2019$ExpSchool)
+HDR2019$MeanSchool <- as.numeric(HDR2019$MeanSchool)
+HDR2019$GNI.capita <- as.numeric(HDR2019$GNI.capita)
+HDR2019$GNI.HDI.rank <- as.numeric(HDR2019$GNI.HDI.rank)
+HDR2019$HDI.rank <- as.numeric(HDR2019$HDI.rank)
+str(HDR2019)
 ```
 
 Now we have a nice clean dataset that we can work with.
@@ -557,27 +562,27 @@ We start by calculating the three indices, using the information given. For the 
 
 ```{r}
 
-HDR2018$I.Health <- 
-  (HDR2018$LifeExp - 20) / (85 - 20)
+HDR2019$I.Health <- 
+  (HDR2019$LifeExp - 20) / (85 - 20)
 
-HDR2018$I.Education <- 
-  ((pmin(HDR2018$ExpSchool, 18) - 0) / 
-  (18 - 0) + (HDR2018$MeanSchool - 0) / 
+HDR2019$I.Education <- 
+  ((pmin(HDR2019$ExpSchool, 18) - 0) / 
+  (18 - 0) + (HDR2019$MeanSchool - 0) / 
   (15 - 0)) / 2
 
-HDR2018$I.Income <-
-  (log(HDR2018$GNI.capita) - log(100)) /
+HDR2019$I.Income <-
+  (log(HDR2019$GNI.capita) - log(100)) /
   (log(75000) - log(100))
 
-HDR2018$HDI.calc <- 
-  (HDR2018$I.Health * HDR2018$I.Education * 
-    HDR2018$I.Income)^(1/3)
+HDR2019$HDI.calc <- 
+  (HDR2019$I.Health * HDR2019$I.Education * 
+    HDR2019$I.Income)^(1/3)
 ```
 
 Now we can compare the `HDI` given in the table and our calculated HDI.
 
 ```{r}
-HDR2018[, c("HDI", "HDI.calc")]
+HDR2019[, c("HDI", "HDI.calc")]
 ```
 [End of walk-through]
 
@@ -594,18 +599,18 @@ First, we import the data and check that it has been imported correctly. You can
 
 ```{r}
 # Filename
-allHDR2018 <- read_excel("2018_all_indicators.xlsx",
+allHDR2019 <- read_excel("2018_all_indicators.xlsx",
   # Sheet to import
   sheet = "Data")
 
-head(allHDR2018)
+head(allHDR2019)
 ```
 
 ```{r}
-str(HDR2018)
+str(HDR2019)
 ```
 
-Then we follow the same process as in R walk-through 4.7—getting the data for the indicators we want, reshaping it so that each indicator is in a different column (instead of a different row), and giving each indicator a shorter name. We will save this data as `HDR2018w`. Note that the variable `9999` refers to the latest year available, or the average taken over a range of years (the Excel file contains information on which year(s) were used).
+Then we follow the same process as in R walk-through 4.7—getting the data for the indicators we want, reshaping it so that each indicator is in a different column (instead of a different row), and giving each indicator a shorter name. We will save this data as `HDR2019w`. Note that the variable `9999` refers to the latest year available, or the average taken over a range of years (the Excel file contains information on which year(s) were used).
 
 ```{r}
 indicators <- c(
@@ -616,28 +621,28 @@ indicators <- c(
   "Mortality rate, female adult (per 1,000 people)", 
   "Mortality rate, male adult (per 1,000 people)"
 
-HDR2018l <- allHDR2018[
-  allHDR2018$indicator_name %in% indicators, ]
+HDR2019l <- allHDR2019[
+  allHDR2019$indicator_name %in% indicators, ]
 
-HDR2018l <- subset(HDR2018l, 
+HDR2019l <- subset(HDR2019l, 
   # Indicate which variables to keep.
   select = c("indicator_name", "country_name", "9999"))
 
-HDR2018w <- dcast(HDR2018l, country_name ~ indicator_name, 
+HDR2019w <- dcast(HDR2019l, country_name ~ indicator_name, 
   value.var = "9999")
-names(HDR2018.Edu)[1] <- "HDI.rank"
+names(HDR2019.Edu)[1] <- "HDI.rank"
 
 # Rename the second column, currently named 'Very high …'
 
-names(HDR2018w)[1] <- "Country"
-names(HDR2018w)[2] <- "Child.Malnu"
-names(HDR2018w)[3] <- "Tert.Enrol"
-names(HDR2018w)[4] <- "Adult.Lit"
-names(HDR2018w)[5] <- "Mortality.Female"
-names(HDR2018w)[6] <- "Mortality.Male"
-names(HDR2018w)[7] <- "Prim.Teacher"
+names(HDR2019w)[1] <- "Country"
+names(HDR2019w)[2] <- "Child.Malnu"
+names(HDR2019w)[3] <- "Tert.Enrol"
+names(HDR2019w)[4] <- "Adult.Lit"
+names(HDR2019w)[5] <- "Mortality.Female"
+names(HDR2019w)[6] <- "Mortality.Male"
+names(HDR2019w)[7] <- "Prim.Teacher"
 
-str(HDR2018w)
+str(HDR2019w)
 ```
 
 Looking at the structure (`str( )`), we can see that all indicators are correctly in numerical (`num`) format.
@@ -645,7 +650,7 @@ Looking at the structure (`str( )`), we can see that all indicators are correctl
 Before we can calculate indices, we need to set minimum and maximum values, which we base on the minimum and maximum values in the sample.
 
 ```{r}
-summary(HDR2018w)
+summary(HDR2019w)
 ```
 
 As we want the observations to be inside the [min, max] interval, we choose the following [min, max] pairs for the education indicators: Adult.Lit: [15, 100], Tert.Enrol: [2, 122], and Prim.Teacher: [15, 100]. You may want to research why there can be countries with a tertiary enrolment ratio larger than 100%.
@@ -653,21 +658,21 @@ As we want the observations to be inside the [min, max] interval, we choose the 
 Let’s calculate the alternative education index (`I.Education.alt`), taking an arithmetic average just as we did for `I.Education` in R walk-through 4.7.
 
 ```{r}
-HDR2018w$I.Adult.Lit <-
-  (HDR2018w$Adult.Lit-15) / (100-15)
+HDR2019w$I.Adult.Lit <-
+  (HDR2019w$Adult.Lit-15) / (100-15)
 
-HDR2018w$I.Tert.Enrol<-
-  (HDR2018w$Tert.Enrol-2) / (122-2) 
+HDR2019w$I.Tert.Enrol<-
+  (HDR2019w$Tert.Enrol-2) / (122-2) 
 
-HDR2018w$I.Prim.Teacher <-
-  (HDR2018w$Prim.Teacher-15) / (100-15)
+HDR2019w$I.Prim.Teacher <-
+  (HDR2019w$Prim.Teacher-15) / (100-15)
   
-HDR2018w$I.Education.alt <- 
-  (HDR2018w$I.Adult.Lit +
-    HDR2018w$I.Tert.Enrol + 
-    HDR2018w$I.Prim.Teacher) / 3
+HDR2019w$I.Education.alt <- 
+  (HDR2019w$I.Adult.Lit +
+    HDR2019w$I.Tert.Enrol + 
+    HDR2019w$I.Prim.Teacher) / 3
 
-summary(HDR2018w$I.Education.alt)
+summary(HDR2019w$I.Education.alt)
 ```
 
 You can see that we could not calculate this index for 113 countries, as at least one of the three values was missing.
@@ -675,75 +680,75 @@ You can see that we could not calculate this index for 113 countries, as at leas
 We repeat this procedure to calculate an alternative health index (`I.Health.alt`). The [min, max] pairs we use are: Child.Malnu: [1, 56], Mortality.Female: [34, 463], Mortality.Male: [63, 555].
 
 ```{r}
-HDR2018w$I.Child.MalNu <-
-  (HDR2018w$Child.MalNu - 1) /
+HDR2019w$I.Child.MalNu <-
+  (HDR2019w$Child.MalNu - 1) /
   (56 - 1)
 
-HDR2018w$I.Mortality.Female <-
-  (HDR2018w$Mortality.Female - 34) /
+HDR2019w$I.Mortality.Female <-
+  (HDR2019w$Mortality.Female - 34) /
   (463 - 34) 
 
-HDR2018w$I.Mortality.Male <-
-  (HDR2018w$Mortality.Male - 63) /
+HDR2019w$I.Mortality.Male <-
+  (HDR2019w$Mortality.Male - 63) /
   (555 - 63)
 
-HDR2018w$I.Health.alt <-
-  (HDR2018w$I.Child.MalNu + 
-  HDR2018w$I.Mortality.Female + 
-  HDR2018w$I.Mortality.Male) / 3
+HDR2019w$I.Health.alt <-
+  (HDR2019w$I.Child.MalNu + 
+  HDR2019w$I.Mortality.Female + 
+  HDR2019w$I.Mortality.Male) / 3
 
 # Note that these are all 'bad' indicators in the sense that higher numbers indicate worse outcomes.
 
 # For all other indicators, larger numbers mean better outcomes. So we need to 'flip' the values of this indicator.
 
-HDR2018w$I.Health.alt <- (1 - HDR2018w$I.Health.alt)
+HDR2019w$I.Health.alt <- (1 - HDR2019w$I.Health.alt)
 
-summary(HDR2018w$I.Health.alt)
+summary(HDR2019w$I.Health.alt)
 ```
 
-Now we use the `merge` function to merge this variable into our existing `HDR2018` dataframe.
+Now we use the `merge` function to merge this variable into our existing `HDR2019` dataframe.
 
 ```{r}
-HDR2018 <- merge(HDR2018, HDR2018w)
+HDR2019 <- merge(HDR2019, HDR2019w)
 ```
 
 #### Calculate an alternative HDI
 
-Looking at `HDR2018`, you will see that alternative health and education indices have been added. Now we are in a position to calculate our own HDI (`HDI.own`).
+Looking at `HDR2019`, you will see that alternative health and education indices have been added. Now we are in a position to calculate our own HDI (`HDI.own`).
 
 ```{r}
-HDR2018$HDI.own <- 
-  (HDR2018$I.Health.alt *
-    HDR2018$I.Education.alt *
-    HDR2018$I.Income)^(1/3) 
+HDR2019$HDI.own <- 
+  (HDR2019$I.Health.alt *
+    HDR2019$I.Education.alt *
+    HDR2019$I.Income)^(1/3) 
 
-summary(HDR2018$HDI.own)
+summary(HDR2019$HDI.own)
 ```
 
 We have a substantial number of missing observations, leaving us with around 70 countries for which we could calculate the alternative HDI.
 
 #### Calculate ranks
 
-To compare the ranks of the two indices (the original HDI and our alternative HDI), we should only rank the countries that have observations for both indices. We will create a dataframe called `HDR2018_sub` that contains this subset of countries.
+To compare the ranks of the two indices (the original HDI and our alternative HDI), we should only rank the countries that have observations for both indices. We will create a dataframe called `HDR2019_sub` that contains this subset of countries.
 
 ```{r}
-HDR2018_sub <- 
-  subset(HDR2018, !is.na(HDI) & !is.na(HDI.own)) 
+HDR2019_sub <- 
+  subset(HDR2019, !is.na(HDI) & !is.na(HDI.own)) 
 ```
 
 Let's calculate the rank for our index. The `rank` function will assign rank 1 to the smallest index value, but we want the largest (best) index value to have the rank 1. We add `-` in front of the variable name to obtain the desired effect.
 
 ```{r}
-HDR2018_sub$HDI.own.rank <-
-  rank(-HDR2018_sub$HDI.own, na.last = "keep") 
-HDR2018_sub$HDI.rank <-
-  rank(-HDR2018_sub$HDI, na.last = "keep") 
+HDR2019_sub$HDI.own.rank <-
+  rank(-HDR2019_sub$HDI.own, na.last = "keep") 
+HDR2019_sub$HDI.rank <-
+  rank(-HDR2019_sub$HDI, na.last = "keep") 
 ```
 
 Now we will use the `ggplot` function to make a scatterplot comparing the rank of the HDI with that of our own index.
 
 ```{r}
-ggplot(HDR2018_sub, aes(x = HDI.rank, y = HDI.own.rank)) +
+ggplot(HDR2019_sub, aes(x = HDI.rank, y = HDI.own.rank)) +
   # Use solid circles
   geom_point(shape = 16) +
   labs(y = "Alternative HDI rank", x = "HDI rank") +
@@ -754,9 +759,9 @@ ggplot(HDR2018_sub, aes(x = HDI.rank, y = HDI.own.rank)) +
 You can see that in general the rankings are similar. If they were identical, the points in the scatterplot would form a straight upward-sloping line. They do not form a straight line, but there is a very strong positive correlation. There are, however, a few countries where the alternative definitions have caused a change in ranking, so let's use the `head` and `tail` functions to find out which countries these are.
 
 ```{r}
-temp <- HDR2018_sub[
-  order(HDR2018_sub$HDI.rank -
-  HDR2018_sub$HDI.own.rank),
+temp <- HDR2019_sub[
+  order(HDR2019_sub$HDI.rank -
+  HDR2019_sub$HDI.own.rank),
   # Show selected variables 
   c("Country", "HDI.rank", "HDI.own.rank")]
 
