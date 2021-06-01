@@ -25,7 +25,7 @@ library(reticulate)
 # py_install("matplotlib")
 # Unable to install "math" the following
 # py_install("math")
-py_install("sympy")
+# py_install("sympy")
 # py_install("scipy")
 # Install package in specific environment "environment-name"
 # virtualenv_install("environment-name", "scipy")
@@ -39,6 +39,8 @@ matplotlib <- import("matplotlib")
 matplotlib$use("Agg", force = TRUE)
 ```
 
+## Cálculo simbólico
+
 ```{python}
 from sympy import *
 x, y = symbols('x y')
@@ -49,6 +51,14 @@ expand(x*(expr + 1 - x) )
 # Factorizamos una nueva expresión
 factor(x**2+2*x*y)
 ```
+
+### Resolver ecuaciones
+
+```{python}
+solve(0.3*4+0.2+0.2*7+0.3*x-4, x)
+# 0.3*4+0.2+0.2*7+0.3*6.9
+```
+
 
 ### Nullspace
 
