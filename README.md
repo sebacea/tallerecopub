@@ -1,4 +1,4 @@
-Talleres Finanzas Sostenibles
+Talleres Finanzas Sostenibles Cuantitativas
 ================
 
 ## Plantillas
@@ -20,3 +20,15 @@ Talleres Finanzas Sostenibles
 -   [Proyecto 5](https://www.core-econ.org/doing-economics/book/text/05-03.html) de [coreecon](http://core-econ.org)
 -   [Script en formato Markdown por traducir]()
 -   [Desigualdad en América Latina](Semana2/WelfareIneqLatam.Rmd)
+
+## Taller 3
+
+-   [Diagramas](Taller3/Diagramas.Rmd)
+
+## Taller 4
+
+-   [ETL Bienestar Chile](Taller4/Chile.Rmd)
+
+## Taller 5
+
+-   [Cómputo simbólico](Taller5/Verifications.Rmd)
