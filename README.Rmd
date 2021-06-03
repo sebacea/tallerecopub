@@ -38,3 +38,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Taller 5
 
 - [Cómputo simbólico](Taller5/Verifications.Rmd)
+
+## Taller 6
+
+- [Nubes de palabras](Taller6/WordCloud.Rmd)
