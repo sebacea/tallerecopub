@@ -1,0 +1,90 @@
+---
+title: "Word Cloud"
+output: html_notebook
+---
+
+
+
+```{r echo=FALSE}
+# http://www.sthda.com/english/wiki/text-mining-and-word-cloud-fundamentals-in-r-5-simple-steps-you-should-know
+# Install
+# install.packages("tm")  # for text mining
+# install.packages("SnowballC") # for text stemming
+# install.packages("wordcloud") # word-cloud generator 
+# install.packages("RColorBrewer") # color palettes
+# Load
+library("tm")
+library("SnowballC")
+library("wordcloud")
+library("RColorBrewer")
+```
+
+```{r}
+setwd("~/Google Drive/Classroom/Economía del Bienestar/2020")
+archivos<- list.files("~/Google Drive/Classroom/Economía del Bienestar/2020")
+text <- readLines(paste("/Users/sebacea/Google Drive/Classroom/Economía del Bienestar/2020/",archivos[1],sep=""))
+for (archivo in 2:length(archivos)) {
+  text <- paste(text,readLines(paste("/Users/sebacea/Google Drive/Classroom/Economía del Bienestar/2020/",archivos[archivo],sep="")))
+}
+text <- readLines(file.choose())
+docs <- Corpus(VectorSource(text))
+inspect(docs)
+```
+
+Transformation is performed using tm_map() function to replace, for example, special characters from the text.
+
+Replacing “/”, “@” and “|” with space:
+
+```{r}
+toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
+docs <- tm_map(docs, toSpace, "/")
+docs <- tm_map(docs, toSpace, "@")
+docs <- tm_map(docs, toSpace, "\\|")
+```
+
+The R code below can be used to clean your text :
+```{r}
+# Convert the text to lower case
+docs <- tm_map(docs, content_transformer(tolower))
+# Remove numbers
+docs <- tm_map(docs, removeNumbers)
+# Remove english common stopwords
+docs <- tm_map(docs, removeWords, stopwords("english"))
+docs <- tm_map(docs, removeWords, stopwords("spanish"))
+# Remove your own stop word
+# specify your stopwords as a character vector
+docs <- tm_map(docs, removeWords, c("fundación", "objetivo", "proyecto", "programa", "través")) 
+# Remove punctuations
+docs <- tm_map(docs, removePunctuation)
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
+# Text stemming
+# docs <- tm_map(docs, stemDocument)
+```
+
+Document matrix is a table containing the frequency of the words. Column names are words and row names are documents. The function TermDocumentMatrix() from text mining package can be used as follow :
+
+```{r}
+dtm <- TermDocumentMatrix(docs)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+head(d, 10)
+```
+
+The importance of words can be illustrated as a word cloud as follow :
+
+```{r, echo=FALSE}
+set.seed(1234)
+wordcloud(words = d$word, freq = d$freq, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+```
+
+# Base datos Colunga
+
+```{r}
+library(readxl)
+Base_de_Datos_Colunga <- read_excel("Colunga/Base de Datos Colunga.xlsx")
+View(Base_de_Datos_Colunga)
+```
