@@ -59,6 +59,7 @@ library(readr)
 SII <- read_delim("../data_local/PUB_Empresas_2019_102020.tab", 
     "\t", escape_double = FALSE, trim_ws = TRUE)
 # Se pierden 673848-nrow(SII)=10173 filas
+# REVISAR: ultima fila del data.frame ingestado es igual a la última file del xlsb
 ```
 
 ```{r}
