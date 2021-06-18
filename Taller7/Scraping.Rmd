@@ -53,16 +53,20 @@ matplotlib$use("Agg", force = TRUE)
 # download.file("https://www.sii.cl//estadisticas/nominas/PUB_Empresas_2019_102020.xlsb",
 #               destfile = "../data_local/SII.xlsb")
 
-# Se trasnforma manual a tab separated
+# Se transforma manual a tab separated ya que librería readxlsb falla 
+## (ver chunk en https://github.com/sebacea/tallerecopub/blob/hdi2019/Taller7/Scraping.Rmd)
 # Transformación automática a csv de excel no funciona
-library(readr)
-SII <- read_delim("../data_local/PUB_Empresas_2019_102020.tab", 
-    "\t", escape_double = FALSE, trim_ws = TRUE)
+# Se copia contenido a bloc de notas y se lee:
+# library(readr)
+# SII <- read_delim("../data_local/PUB_Empresas_2019_102020.tab", 
+    # "\t", escape_double = FALSE, trim_ws = TRUE)
 # Se pierden 673848-nrow(SII)=10173 filas
 # REVISAR: ultima fila del data.frame ingestado es igual a la última file del xlsb
+# save(SII, file="../data_local/SII.RData")
+load("../data_local/SII.RData")
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 # Los datos están en un amigable formato xlsb que se puede leer en R con la librería readxlsb
 # Sin embargo tiene límite de menos de 100K filas reportado en:
 # https://github.com/velofrog/readxlsb/issues/7
