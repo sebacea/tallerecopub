@@ -50,8 +50,8 @@ matplotlib$use("Agg", force = TRUE)
 # https://www.sii.cl//estadisticas/nominas/PUB_Empresas_2019_102020.xlsb
 
 #Descargamos
-download.file("https://www.sii.cl//estadisticas/nominas/PUB_Empresas_2019_102020.xlsb",
-              destfile = "../data_local/SII2.xlsb")
+# download.file("https://www.sii.cl//estadisticas/nominas/PUB_Empresas_2019_102020.xlsb",
+              # destfile = "../data_local/SII2.xlsb")
 # Los datos están en un amigable formato xlsb que se puede leer en R con la librería readxlsb
 # Se debe instalar inicialmente si no está instalada
 # install.packages("readxlsb")
