@@ -1,0 +1,163 @@
+---
+title: "Scraping"
+author: "Cea"
+date: "8/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(reticulate)
+# Use other python
+# use_python("/home/sebastian/.pyenv/shims/python")
+# Check python config
+# First time it ask to install miniconda
+# py_config()
+# Command line python
+# repl_python()
+# Verify conda environments
+# conda_list()
+# indicate that we want to use a specific condaenv
+# use_condaenv("r-reticulate")
+# Install package in default conda environment "r-reticulate"
+# py_install("pandas")
+# py_install("time")
+# py_install("matplotlib")
+# Unable to install "math" the following
+# py_install("math")
+# py_install("sympy")
+# py_install("scipy")
+# Install package in specific environment "environment-name"
+# virtualenv_install("environment-name", "scipy")
+# Problem: 
+# QStandardPaths: XDG_RUNTIME_DIR not set, defaulting to '/tmp/runtime-sebastian'
+# No protocol specified
+# qt.qpa.screen: QXcbConnection: Could not connect to display :0
+# Could not connect to any X display.
+# Solution found on https://community.rstudio.com/t/how-to-display-the-plot-in-the-python-chunk/22039/2
+matplotlib <- import("matplotlib")
+matplotlib$use("Agg", force = TRUE)
+```
+
+```{r}
+# Descargamos datos del SII
+# Nómina de empresas personas jurídicas AT 2015-2019
+## Listado de todos los contribuyentes personas jurídicas catalogados como empresas por el SII para los años AT2006 al AT2019 respectivamente, con información del tramo de venta, número de trabajadores, región, rubro, subrubro, actividad económica principal, fecha de inicio de actividad, fecha de término de giro, tipo de término de giro, tipo de contribuyente, subtipo de contribuyente e información del capital propio tributario, para cada contribuyente.
+# https://www.sii.cl//estadisticas/nominas/PUB_Empresas_AT2015_AT2019_202101.xlsb
+
+# Nómina de empresas personas jurídicas AT 2020
+## Listado de todos los contribuyentes personas jurídicas catalogados como empresas por el SII para el AT2020, con información del tramo de venta, número de trabajadores, región, rubro, subrubro, actividad económica principal, fecha de inicio de actividad, fecha de término de giro, tipo de término de giro, tipo de contribuyente, subtipo de contribuyente e información del capital propio tributario, para cada contribuyente.
+# https://www.sii.cl//estadisticas/nominas/PUB_Empresas_2019_102020.xlsb
+
+#Descargamos
+download.file("https://www.sii.cl//estadisticas/nominas/PUB_Empresas_2019_102020.xlsb",
+              destfile = "../data_local/SII2.xlsb")
+# Los datos están en un amigable formato xlsb que se puede leer en R con la librería readxlsb
+# Se debe instalar inicialmente si no está instalada
+# install.packages("readxlsb")
+library(readxlsb)
+# La lectura de la tabla arroja una lista de la cual extraemos la tabla "result"
+df = read_xlsb("../data_local/SII.xlsb", sheet="AC_2019", range = "AC_2019!A1:T673848", debug = TRUE)[["result"]]
+```
+
+
+```{python}
+# Google colab original
+# https://colab.research.google.com/drive/1QF5uKF8WEXbXtzP3r63ieGvhF1OOozvq?authuser=2#scrollTo=gwJ7DxZeCltM
+from bs4 import BeautifulSoup
+import requests
+import pandas as pd
+from io import StringIO 
+import openpyxl
+!pip install -q xlrd
+from pandas import ExcelFile
+import time
+import csv
+import numpy as np
+
+excel_document = openpyxl.load_workbook('/content/drive/My Drive/COS/nomina_empresas_pjuridicas_at2018.xlsx')
+#excel_document.get_sheet_names()
+SII = excel_document.get_sheet_by_name('Datos')
+
+#Creación de archivos csv para datos básicos, contacto y cargos
+basicoscsv = open('dataDatosBasicos.csv','a')
+campos = ['Rut Organizacion','Nombre Organizacion','Razon Social','Tipo de Institucion','Area Tematica',
+          'Patrimonio','Capital','Estado de Resultado']
+dataDatosBasicos = csv.DictWriter(basicoscsv, fieldnames=campos)
+dataDatosBasicos.writeheader()
+
+contactocsv = open('dataContacto.csv','a')
+campos = ['#','Direccion','Fono Fijo','Movil','Fono/Fax','Rut Organizacion']
+dataContacto = csv.DictWriter(contactocsv, fieldnames=campos)
+dataContacto.writeheader()
+
+cargoscsv = open('dataCargos.csv','a')
+campos = ['#','Rut','Nombre','Cargo','Rut Organizacion']
+dataCargos = csv.DictWriter(cargoscsv, fieldnames=campos)
+dataCargos.writeheader()
+
+k=188000
+while (k<190000):  
+  pagina=('https://www.registros19862.cl/fichas/ver/rut/'+str(SII.cell(row = k, column = 1).value)+'/clase/5')
+  r = requests.get(pagina) 
+  soup = BeautifulSoup(r.text, 'html.parser')
+  tablas = soup.findAll("table", {"class": "tabla100"})
+  
+  if(tablas!=[]):
+    
+    #Datos Básicos
+    formulario = soup.findAll("div", {"class": "label negrita"})
+    
+    dataDatosBasicos.writerow({'Rut Organizacion':formulario[0].text.strip(),
+                      'Nombre Organizacion':formulario[1].text.strip(),
+                      'Razon Social':formulario[2].text.strip(),
+                      'Tipo de Institucion':formulario[3].text.strip(),
+                      'Area Tematica':formulario[4].text.strip(),
+                      'Patrimonio':formulario[5].text.strip(),
+                      'Capital':formulario[6].text.strip(),
+                      'Estado de Resultado':formulario[7].text.strip()})
+
+
+    #Contacto
+    df_contacto = pd.read_html(str(tablas[0]))[0]
+    f=0
+    if(df_contacto['#'].count()>0):
+      while(f < df_contacto['#'].count()):
+        dataContacto.writerow({'#':df_contacto.loc[f,'#'],
+                      'Direccion':df_contacto.loc[f,'Dirección'],
+                      'Fono Fijo':df_contacto.loc[f,'Fono Fijo'],
+                      'Movil':df_contacto.loc[f,'Movil'],
+                      'Fono/Fax':df_contacto.loc[f,'Fono/Fax'],
+                      'Rut Organizacion':formulario[0].text.strip()})
+        f+=1
+
+    #Cargos
+    df_cargos = pd.read_html(str(tablas[1]))[0] 
+    f=0
+    if(df_cargos['#'].count()>0):
+      while(f < df_cargos['#'].count()):
+        
+        dataCargos.writerow({'#':df_cargos.loc[f,'#'],
+                      'Rut':df_cargos.loc[f,'Rut'],
+                      'Nombre':df_cargos.loc[f,'Nombre'],
+                      'Cargo':df_cargos.loc[f,'Cargo'],
+                      'Rut Organizacion':formulario[0].text.strip()})
+        f+=1
+    
+    print("lectura. Fila: ",k)
+    k+=1
+    time.sleep(2)
+    
+     
+  else:
+    print("sin datos. Fila: ",k)
+    k+=1
+    time.sleep(2)
+
+basicoscsv.close()
+contactocsv.close()
+cargoscsv.close()
+
+print("fin")
+```
+

@@ -42,3 +42,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Taller 6
 
 - [Nubes de palabras](Taller6/WordCloud.Rmd)
+
+## Taller 7
+
+- [Scraping](Taller7/Scraping.Rmd)
