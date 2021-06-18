@@ -49,16 +49,30 @@ matplotlib$use("Agg", force = TRUE)
 ## Listado de todos los contribuyentes personas jurídicas catalogados como empresas por el SII para el AT2020, con información del tramo de venta, número de trabajadores, región, rubro, subrubro, actividad económica principal, fecha de inicio de actividad, fecha de término de giro, tipo de término de giro, tipo de contribuyente, subtipo de contribuyente e información del capital propio tributario, para cada contribuyente.
 # https://www.sii.cl//estadisticas/nominas/PUB_Empresas_2019_102020.xlsb
 
-#Descargamos
+# Descargamos
 # download.file("https://www.sii.cl//estadisticas/nominas/PUB_Empresas_2019_102020.xlsb",
-              # destfile = "../data_local/SII2.xlsb")
+#               destfile = "../data_local/SII.xlsb")
+
+# Se trasnforma manual a tab separated
+# Transformación automática a csv de excel no funciona
+library(readr)
+SII <- read_delim("../data_local/PUB_Empresas_2019_102020.tab", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+# Se pierden 673848-nrow(SII)=10173 filas
+```
+
+```{r}
 # Los datos están en un amigable formato xlsb que se puede leer en R con la librería readxlsb
+# Sin embargo tiene límite de menos de 100K filas reportado en:
+# https://github.com/velofrog/readxlsb/issues/7
+# Por lo que la ingesta no puede ser directa y se hace trasnformado manual a csv
 # Se debe instalar inicialmente si no está instalada
 # install.packages("readxlsb")
-library(readxlsb)
+# library(readxlsb)
 # La lectura de la tabla arroja una lista de la cual extraemos la tabla "result"
-df = read_xlsb("../data_local/SII.xlsb", sheet="AC_2019", range = "AC_2019!A1:T673848", debug = TRUE)[["result"]]
+# df = read_xlsb("../data_local/SII.xlsb", sheet="AC_2019", range = "'AC_2019'!A1:T673848", debug = TRUE)[["result"]]
 ```
+
 
 
 ```{python}
