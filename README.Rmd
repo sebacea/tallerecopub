@@ -46,3 +46,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Taller 7
 
 - [Scraping](Taller7/Scraping.Rmd)
+
+## Taller 8
+
+- [Pareto Distribution](Taller8/Pareto.Rmd)
