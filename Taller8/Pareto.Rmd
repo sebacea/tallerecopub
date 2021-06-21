@@ -24,7 +24,8 @@ The package provides a tool kit for the Pareto, the piecewise Pareto and the gen
 ## Pareto distribution
 
 **Definition:**
-Let $t>0$ and $\alpha>0$. The *Pareto distribution* $\text{Pareto}(t,\alpha)$ is defined by the distribution function $$
+Let $t>0$ and $\alpha>0$. The *Pareto distribution* $\text{Pareto}(t,\alpha)$ is defined by the distribution function 
+$$
 F_{t,\alpha}(x):=\begin{cases}
 0 & \text{ for $x\le t$} \\
 \displaystyle 1-\left(\frac{t}{x}\right)^{\alpha} & \text{ for $x>t$.}

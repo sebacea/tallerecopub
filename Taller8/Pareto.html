@@ -182,9 +182,9 @@ F_{t,\alpha}(x):=\begin{cases}
 <div id="simulation" class="section level3">
 <h3>Simulation:</h3>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rPareto</span>(<span class="dv">20</span>, <span class="dv">1000</span>, <span class="dv">2</span>)</span></code></pre></div>
-<pre><code>##  [1] 1175.703 1216.122 3326.341 2062.386 1014.791 1428.093 1628.960 3108.688
-##  [9] 1011.777 1193.661 1271.394 1137.045 1421.159 1627.447 1251.192 1526.884
-## [17] 1496.659 7353.294 1927.547 1391.388</code></pre>
+<pre><code>##  [1] 1135.198 1466.802 1878.469 1106.803 1457.658 1259.581 1393.865 1031.917
+##  [9] 1006.379 1075.336 1248.763 1373.328 1198.600 4722.792 2468.677 1064.084
+## [17] 2378.792 4475.481 1176.187 1078.884</code></pre>
 </div>
 <div id="layer-mean" class="section level3">
 <h3>Layer mean:</h3>
@@ -280,7 +280,7 @@ f_2 = f_1 \cdot \left(\frac{t_1}{t_2}\right)^\alpha
 <p>Pareto distributed losses with a reporting threshold of <span class="math inline">\(t=1000\)</span> and <span class="math inline">\(\alpha = 2\)</span>:</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">rPareto</span>(<span class="dv">1000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="dv">2</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>)</span></code></pre></div>
-<pre><code>## [1] 2.073951</code></pre>
+<pre><code>## [1] 2.020135</code></pre>
 <p>In reinsurance, sometimes large loss data from different sources are used for severity fits. Then the losses are typically only available in excess of certain reporting thresholds which may vary by data source. Assume that two data sources each contain 5000 losses in excess of 1000, which are Pareto distributed with an alpha of 2 but from data source 2 we only know the losses exceeding a reporting threshold of 3000. If we apply the standard ML estimator with a threshold of 1000, then we obtain an alpha which is too low, since we ignore that the loss data is not complete in excess of 1000:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>losses_1 <span class="ot">&lt;-</span> <span class="fu">rPareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="dv">2</span>)</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> <span class="fu">rPareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="dv">2</span>)</span>
@@ -288,13 +288,13 @@ f_2 = f_1 \cdot \left(\frac{t_1}{t_2}\right)^\alpha
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> losses_2[reported]</span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">c</span>(losses_1, losses_2)</span>
 <span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>)</span></code></pre></div>
-<pre><code>## [1] 1.672086</code></pre>
+<pre><code>## [1] 1.648832</code></pre>
 <p>In the function <code>Pareto_ML_Estimator_Alpha</code> the user can define reporting threshold for each loss in order to handle this situation:</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1000</span>, <span class="fu">length</span>(losses_1))</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">3000</span>, <span class="fu">length</span>(losses_2))</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(reporting_thresholds_1, reporting_thresholds_2)</span>
 <span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
-<pre><code>## [1] 2.041987</code></pre>
+<pre><code>## [1] 2.006693</code></pre>
 <p>Now, assume that the underlying policies have limits of 5000 or 10000 and that a loss is censored if it exceeds the respective limit. If the underlying losses are Pareto distributed before they are censored then ML estimation leads to a too large value for alpha:</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>limits <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">5000</span>, <span class="dv">10000</span>), <span class="fu">length</span>(losses), <span class="at">replace =</span> T)</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> losses <span class="sc">&gt;</span> limits</span>
@@ -303,11 +303,11 @@ f_2 = f_1 \cdot \left(\frac{t_1}{t_2}\right)^\alpha
 <span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> losses[reported]</span>
 <span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> reporting_thresholds[reported]</span>
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
-<pre><code>## [1] 2.14036</code></pre>
+<pre><code>## [1] 2.100759</code></pre>
 <p>In order to deal with this situation the function allows to specify for each loss if it is censored or not:</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">reporting_thresholds =</span> reporting_thresholds, </span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">is.censored =</span> censored)</span></code></pre></div>
-<pre><code>## [1] 2.045439</code></pre>
+<pre><code>## [1] 2.004925</code></pre>
 </div>
 <div id="truncation" class="section level3">
 <h3>Truncation</h3>
@@ -348,9 +348,9 @@ F_{\mathbf{t},\boldsymbol\alpha}(x):=\begin{cases}
 <div id="simulation-1" class="section level3">
 <h3>Simulation</h3>
 <div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rPiecewisePareto</span>(<span class="dv">20</span>, t, alpha)</span></code></pre></div>
-<pre><code>##  [1] 4109.354 1488.689 1722.152 1830.606 1092.887 2479.496 4423.514 1045.518
-##  [9] 1988.635 2564.213 1365.128 4222.566 1805.408 1954.446 4004.058 1200.801
-## [17] 1658.681 3391.594 1361.789 1314.552</code></pre>
+<pre><code>##  [1] 1266.505 1288.670 1082.296 2143.533 2117.197 1144.358 4058.949 1202.623
+##  [9] 1971.416 4069.666 1337.976 2304.814 1338.505 3227.172 1913.686 2236.270
+## [17] 1214.087 1331.992 1177.053 1188.265</code></pre>
 </div>
 <div id="layer-mean-1" class="section level3">
 <h3>Layer mean</h3>
@@ -369,7 +369,7 @@ F_{\mathbf{t},\boldsymbol\alpha}(x):=\begin{cases}
 <p>Piecewise Pareto distributed losses with <span class="math inline">\(\mathbf{t}:=(1000,\,2000,\, 3000)\)</span> and <span class="math inline">\(\boldsymbol\alpha:=(1,\, 2,\, 3)\)</span>:</p>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">rPiecewisePareto</span>(<span class="dv">10000</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
 <span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>))</span></code></pre></div>
-<pre><code>## [1] 0.9990839 2.0799410 3.0290149</code></pre>
+<pre><code>## [1] 0.9905293 2.0514411 2.9437609</code></pre>
 <p>Reporting thresholds and censoring of losses can be taken into account as described for the function <code>Pareto_ML_Estimator_Alpha</code>.</p>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>losses_1 <span class="ot">&lt;-</span> <span class="fu">rPiecewisePareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> <span class="fu">rPiecewisePareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
@@ -377,13 +377,13 @@ F_{\mathbf{t},\boldsymbol\alpha}(x):=\begin{cases}
 <span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> losses_2[reported]</span>
 <span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">c</span>(losses_1, losses_2)</span>
 <span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>))</span></code></pre></div>
-<pre><code>## [1] 0.7427426 1.2482110 3.1484922</code></pre>
+<pre><code>## [1] 0.7673911 1.1657748 2.9811903</code></pre>
 <div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1000</span>, <span class="fu">length</span>(losses_1))</span>
 <span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">3000</span>, <span class="fu">length</span>(losses_2))</span>
 <span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(reporting_thresholds_1, reporting_thresholds_2)</span>
 <span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), </span>
 <span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
-<pre><code>## [1] 0.9638217 2.0173109 3.1484922</code></pre>
+<pre><code>## [1] 1.019078 1.993370 2.981190</code></pre>
 <div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>limits <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">2500</span>, <span class="dv">5000</span>, <span class="dv">10000</span>), <span class="fu">length</span>(losses), <span class="at">replace =</span> T)</span>
 <span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> losses <span class="sc">&gt;</span> limits</span>
 <span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>losses[censored] <span class="ot">&lt;-</span> limits[censored]</span>
@@ -393,11 +393,11 @@ F_{\mathbf{t},\boldsymbol\alpha}(x):=\begin{cases}
 <span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> censored[reported]</span>
 <span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), </span>
 <span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
-<pre><code>## [1] 0.9638217 2.8272635 3.5016177</code></pre>
+<pre><code>## [1] 1.019078 2.881650 3.417452</code></pre>
 <div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), </span>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">reporting_thresholds =</span> reporting_thresholds, </span>
 <span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">is.censored =</span> censored)</span></code></pre></div>
-<pre><code>## [1] 0.9638217 2.0136171 3.0965104</code></pre>
+<pre><code>## [1] 1.019078 2.007762 3.037483</code></pre>
 </div>
 <div id="truncation-1" class="section level3">
 <h3>Truncation</h3>
@@ -622,16 +622,16 @@ F_{\mathbf{t},\boldsymbol\alpha}(x):=\begin{cases}
 <span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">truncation =</span> <span class="dv">10000</span>, <span class="at">truncation_type =</span> <span class="st">&quot;wd&quot;</span>, <span class="at">dispersion =</span> <span class="fl">1.5</span>)</span>
 <span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Simulate_Losses</span>(PPPM, <span class="dv">10</span>)</span></code></pre></div>
 <pre><code>##           [,1]     [,2]     [,3]     [,4]     [,5]     [,6]
-##  [1,]      NaN      NaN      NaN      NaN      NaN      NaN
-##  [2,] 1206.105      NaN      NaN      NaN      NaN      NaN
-##  [3,] 2894.530 5451.623      NaN      NaN      NaN      NaN
-##  [4,] 2064.287      NaN      NaN      NaN      NaN      NaN
-##  [5,] 2386.598 6218.496 3878.284 1173.620      NaN      NaN
-##  [6,] 3430.188      NaN      NaN      NaN      NaN      NaN
-##  [7,] 4885.252 3678.906 2822.305 1123.727 2212.401 1216.296
-##  [8,] 5791.872 1797.084      NaN      NaN      NaN      NaN
-##  [9,] 2688.323      NaN      NaN      NaN      NaN      NaN
-## [10,] 4631.470 1962.941      NaN      NaN      NaN      NaN</code></pre>
+##  [1,] 2591.034      NaN      NaN      NaN      NaN      NaN
+##  [2,] 1160.603 7632.323      NaN      NaN      NaN      NaN
+##  [3,] 1943.672 1464.815      NaN      NaN      NaN      NaN
+##  [4,]      NaN      NaN      NaN      NaN      NaN      NaN
+##  [5,] 6189.602 2468.231 3670.106      NaN      NaN      NaN
+##  [6,]      NaN      NaN      NaN      NaN      NaN      NaN
+##  [7,] 5415.427 3147.171 2817.774      NaN      NaN      NaN
+##  [8,] 2523.405 1086.841 1735.854 2584.448 1051.463 5193.801
+##  [9,]      NaN      NaN      NaN      NaN      NaN      NaN
+## [10,] 1614.787 2094.392 7992.748      NaN      NaN      NaN</code></pre>
 <p>The function <code>Simulate_Losses</code> returns a matrix where each row contains the losses from one simulation.</p>
 <p>Note that for a given expected frequency <code>FQ</code> not every dispersion <code>dispersion &lt; 1</code> is possible for the binomial distribution. In this case a binomial distribution with the smallest dispersion larger than or equal to <code>dispersion</code> is used for the simulation.</p>
 </div>
@@ -666,9 +666,9 @@ F_{t,\alpha_\text{ini}, \alpha_\text{tail}}(x):=\begin{cases}
 <div id="simulation-2" class="section level3">
 <h3>Simulation:</h3>
 <div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rGenPareto</span>(<span class="dv">20</span>, <span class="dv">1000</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span></code></pre></div>
-<pre><code>##  [1]  5026.812  2435.333  1286.624  2119.499  1390.555  1536.478  3376.937
-##  [8]  1856.064  1877.528  1878.378  2032.968 10873.357  1557.909  1015.428
-## [15]  1190.316  4375.766  1705.543  1019.330  2498.207  2331.497</code></pre>
+<pre><code>##  [1]  1804.616  1390.680  1632.321  5095.260  1059.864  2291.837  2093.343
+##  [8]  1119.379  1900.114  1172.185  1535.759 10934.866  1217.600  1268.356
+## [15]  3779.441  5299.947  4601.364  2197.125  5263.906  1438.987</code></pre>
 </div>
 <div id="layer-mean-2" class="section level3">
 <h3>Layer mean:</h3>
@@ -687,7 +687,7 @@ F_{t,\alpha_\text{ini}, \alpha_\text{tail}}(x):=\begin{cases}
 <p>Generalized Pareto distributed losses with <span class="math inline">\(t:=1000\)</span> and <span class="math inline">\(\alpha_\text{ini}=1\)</span>, <span class="math inline">\(\alpha_\text{tail}=2\)</span>:</p>
 <div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">rGenPareto</span>(<span class="dv">10000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span>
 <span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>)</span></code></pre></div>
-<pre><code>## [1] 1.017863 2.004153</code></pre>
+<pre><code>## [1] 0.9884823 1.9297759</code></pre>
 <p>Reporting thresholds and censoring of losses can be taken into account as described for the function <code>Pareto_ML_Estimator_Alpha</code>.</p>
 <div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>losses_1 <span class="ot">&lt;-</span> <span class="fu">rGenPareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span>
 <span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> <span class="fu">rGenPareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span>
@@ -695,13 +695,13 @@ F_{t,\alpha_\text{ini}, \alpha_\text{tail}}(x):=\begin{cases}
 <span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> losses_2[reported]</span>
 <span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">c</span>(losses_1, losses_2)</span>
 <span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>)</span></code></pre></div>
-<pre><code>## [1] 0.6552084 2.1444580</code></pre>
+<pre><code>## [1] 0.6676158 2.0672529</code></pre>
 <div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1000</span>, <span class="fu">length</span>(losses_1))</span>
 <span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">3000</span>, <span class="fu">length</span>(losses_2))</span>
 <span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(reporting_thresholds_1, reporting_thresholds_2)</span>
 <span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>, </span>
 <span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>                             <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
-<pre><code>## [1] 1.016426 1.947782</code></pre>
+<pre><code>## [1] 1.024487 1.923703</code></pre>
 <div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>limits <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">2500</span>, <span class="dv">5000</span>, <span class="dv">10000</span>), <span class="fu">length</span>(losses), <span class="at">replace =</span> T)</span>
 <span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> losses <span class="sc">&gt;</span> limits</span>
 <span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>losses[censored] <span class="ot">&lt;-</span> limits[censored]</span>
@@ -711,11 +711,11 @@ F_{t,\alpha_\text{ini}, \alpha_\text{tail}}(x):=\begin{cases}
 <span id="cb109-7"><a href="#cb109-7" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> censored[reported]</span>
 <span id="cb109-8"><a href="#cb109-8" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>, </span>
 <span id="cb109-9"><a href="#cb109-9" aria-hidden="true" tabindex="-1"></a>                             <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
-<pre><code>## [1] 0.9339968 5.4845046</code></pre>
+<pre><code>## [1] 0.9252937 5.9557503</code></pre>
 <div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>, </span>
 <span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">reporting_thresholds =</span> reporting_thresholds, </span>
 <span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">is.censored =</span> censored)</span></code></pre></div>
-<pre><code>## [1] 1.020722 1.946626</code></pre>
+<pre><code>## [1] 1.019572 1.966330</code></pre>
 </div>
 <div id="truncation-2" class="section level3">
 <h3>Truncation</h3>
@@ -762,17 +762,17 @@ F_{t,\alpha_\text{ini}, \alpha_\text{tail}}(x):=\begin{cases}
 <span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Excess_Frequency</span>(PGPM, thresholds)</span></code></pre></div>
 <pre><code>## [1] 2.0000000 2.0000000 0.8509022 0.1614435 0.0000000 0.0000000</code></pre>
 <div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Simulate_Losses</span>(PGPM, <span class="dv">10</span>)</span></code></pre></div>
-<pre><code>##           [,1]     [,2]     [,3]     [,4]     [,5]     [,6]
-##  [1,] 4426.013 1054.957 1731.179 1349.488      NaN      NaN
-##  [2,]      NaN      NaN      NaN      NaN      NaN      NaN
-##  [3,] 1001.491      NaN      NaN      NaN      NaN      NaN
-##  [4,]      NaN      NaN      NaN      NaN      NaN      NaN
-##  [5,]      NaN      NaN      NaN      NaN      NaN      NaN
-##  [6,] 1726.602 2393.286 5234.401 1131.585 2842.613 3215.741
-##  [7,]      NaN      NaN      NaN      NaN      NaN      NaN
-##  [8,] 3560.942 1355.038      NaN      NaN      NaN      NaN
-##  [9,]      NaN      NaN      NaN      NaN      NaN      NaN
-## [10,] 1190.215 1901.615 1537.311      NaN      NaN      NaN</code></pre>
+<pre><code>##           [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]
+##  [1,] 1310.443      NaN      NaN      NaN      NaN      NaN      NaN      NaN
+##  [2,] 1214.526      NaN      NaN      NaN      NaN      NaN      NaN      NaN
+##  [3,] 2514.700 7414.509 2257.355 1244.038      NaN      NaN      NaN      NaN
+##  [4,] 1536.156 6446.500      NaN      NaN      NaN      NaN      NaN      NaN
+##  [5,] 1036.202      NaN      NaN      NaN      NaN      NaN      NaN      NaN
+##  [6,] 5796.889 1070.094      NaN      NaN      NaN      NaN      NaN      NaN
+##  [7,] 1077.691 1842.969 1743.331 2260.656 1755.392 1136.347 1157.267 1583.067
+##  [8,] 1001.108 1693.973      NaN      NaN      NaN      NaN      NaN      NaN
+##  [9,] 1314.339 4918.383 2005.459 2438.007      NaN      NaN      NaN      NaN
+## [10,]      NaN      NaN      NaN      NaN      NaN      NaN      NaN      NaN</code></pre>
 </div>
 </div>
 <div id="references" class="section level2">
