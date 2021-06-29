@@ -43,3 +43,11 @@ Talleres Finanzas Sostenibles Cuantitativas
 ## Taller 6
 
 -   [Nubes de palabras](Taller6/WordCloud.Rmd)
+
+## Taller 7
+
+-   [Scraping](Taller7/Scraping.Rmd)
+
+## Taller 8
+
+-   [Pareto Distribution](Taller8/Pareto.Rmd)

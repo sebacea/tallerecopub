@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Ulrich Riegel" />
+
+<meta name="date" content="2021-06-21" />
+
+<title>Pareto Package Vignette</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Pareto Package Vignette</h1>
+<h4 class="author">Ulrich Riegel</h4>
+<h4 class="date">2021-06-21</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The (European) Pareto distribution is probably the most popular distribution for modeling large losses in reinsurance pricing. There are good reasons for this popularity, which are discussed in detail in Fackler (2013). We recommend Philbrick (1985) and Schmutz <em>et.al.</em> (1998) for an impression of how the (European) Pareto distribution is applied in practice.</p>
+<p>In cases where the Pareto distribution is not flexible enough, pricing actuaries sometimes use piecewise Pareto distributions. For instance, a Pareto alpha of 1.5 is used to model claim sizes between USD 1M and USD 5M and an alpha of 2.5 is used above USD 5M. A particularly useful and non-trivial application of the piecewise Pareto distribution is that it can be used to match a tower of expected layer losses with a layer independent collective loss model. Details are described in Riegel (2018), who also provides a matching algorithm that works for an arbitrary number of reinsurance layers.</p>
+<p>The package provides a tool kit for the Pareto, the piecewise Pareto and the generalized Pareto distribution, which is useful for pricing of reinsurance treaties. In particular, the package provides the matching algorithm for layer losses.</p>
+</div>
+<div id="pareto-distribution" class="section level2">
+<h2>Pareto distribution</h2>
+<p><strong>Definition:</strong> Let <span class="math inline">\(t&gt;0\)</span> and <span class="math inline">\(\alpha&gt;0\)</span>. The <em>Pareto distribution</em> <span class="math inline">\(\text{Pareto}(t,\alpha)\)</span> is defined by the distribution function <span class="math display">\[
+F_{t,\alpha}(x):=\begin{cases}
+0 &amp; \text{ for $x\le t$} \\
+\displaystyle 1-\left(\frac{t}{x}\right)^{\alpha} &amp; \text{ for $x&gt;t$.}
+\end{cases}
+\]</span> This version of the Pareto distribution is also known as <em>Pareto type I</em>, <em>European Pareto</em> or <em>single-parameter Pareto</em>.</p>
+<div id="distribution-function-and-density" class="section level3">
+<h3>Distribution function and density</h3>
+<p>The functions <code>pPareto</code> and <code>dPareto</code> provide the distribution function and the density function of the Pareto distribution:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Pareto)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">*</span> <span class="dv">1000</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pPareto</span>(x, <span class="dv">1000</span>, <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##  [1] 0.0000000 0.7500000 0.8888889 0.9375000 0.9600000 0.9722222 0.9795918
+##  [8] 0.9843750 0.9876543 0.9900000</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">pPareto</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5000</span>, <span class="dv">1000</span>, <span class="dv">2</span>), <span class="at">xlab =</span> <span class="st">&quot;x&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;CDF(x)&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAACu1BMVEUAAAABAQECAgIDAwMEBAQFBQUGBgYHBwcICAgJCQkKCgoLCwsMDAwNDQ0ODg4PDw8QEBARERESEhITExMUFBQVFRUWFhYXFxcYGBgZGRkaGhobGxscHBwdHR0eHh4fHx8gICAhISEiIiIjIyMkJCQlJSUmJiYnJycoKCgpKSkqKiosLCwtLS0uLi4vLy8xMTEyMjIzMzM0NDQ1NTU2NjY3Nzc4ODg5OTk6Ojo8PDw9PT0/Pz9AQEBBQUFCQkJDQ0NERERGRkZISEhJSUlKSkpLS0tMTExNTU1PT09QUFBSUlJTU1NUVFRVVVVXV1dYWFhZWVlaWlpbW1tcXFxdXV1eXl5fX19gYGBhYWFiYmJjY2NkZGRlZWVmZmZnZ2doaGhpaWlqampsbGxtbW1ubm5vb29wcHBxcXFycnJzc3N0dHR1dXV2dnZ3d3d4eHh5eXl6enp7e3t8fHx9fX2AgICBgYGCgoKDg4OEhISFhYWGhoaHh4eIiIiJiYmKioqLi4uMjIyNjY2Ojo6QkJCRkZGSkpKTk5OUlJSVlZWWlpaXl5eYmJiZmZmampqbm5ucnJydnZ2enp6fn5+goKChoaGioqKjo6OkpKSlpaWmpqanp6epqamqqqqrq6usrKytra2urq6vr6+wsLCxsbGysrKzs7O0tLS1tbW2tra3t7e5ubm6urq7u7u8vLy9vb2+vr6/v7/AwMDBwcHCwsLDw8PExMTGxsbHx8fIyMjJycnLy8vMzMzOzs7Pz8/Q0NDR0dHS0tLT09PU1NTV1dXX19fY2NjZ2dna2trb29vc3Nzd3d3e3t7f39/i4uLj4+Pm5ubn5+fo6Ojp6enq6urr6+vs7Ozt7e3u7u7v7+/w8PDx8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7///9yVP/EAAAACXBIWXMAAA7DAAAOwwHHb6hkAAALzklEQVR4nO2d/X8UxR3H5y6XHImRIIk8hAcbW0pCS20Ag4qRCtT6ANQSRFttAaUptPIgrShF+0BBFBFBjEUrQWglUhMaqlBatKWUUCwPxRKE1lIICcn+Gb2H3N5dbnc+Ozszt0vyff9w7GXmO7O8XzN7O3szc8wguDCvT8DvkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAgAAkCkCAACQKQIAAJAigWtLDS11T0CzA2PHp068feCKp65aC/qAwFAxFYGk8cPDjqLx4J+oPa8twxNCfDSTptxti+KGhEkK8lyag+Jigv6FBMgmCfERRy2mbSCfUBQctFW00q3+nlgnIl3MQwerGgkKwcxgJGbxV0l4ScyAd/MBga+nJ3Ub1Q0EBhO1En/dZal6ZVUOexdrskXYK+5NxOxEr+cVigJkG7pt/1irGhmPV7uss6gxZBrUFHYoKhfc7L1CPoTTZ+Wu78wqd2L8/dZJ1Dg6BRqPEEgrnipeoRdNM8w1jPVkWOlt5knUO5oDx+b3KhJo4eQQUNkfbOog159zXWORQLCnHkhKVK1iNo1LOGcYBtiRytKbfOoVRQ2E5O8B7psvUIWtWv9slh40vfPfvr4iescygUdI/1tScwXEnpegR1LC+9fm77w5HT/Or/rHOoE2SpJ/iBquK13gcdqfujXZIqQf2s7JxSU3YM3XfSbRes/65IUGbzCdQoKdhEt6Cvp8WdfCbB9W+7Ky+NSZmNR0Gp6egWtOHh1HcfLU6QZzP0ESGnpx7XNzscvBqsFm6ULqJn95K737FDn6DLrec4qfKCevgJyZZngyZBJ5eVRf4D4c8tsRsuywo6pfvak0CPoA8KRsxb81rd2kdvvO7P1jkkBTWn+5klVRgXPYJun3oxftBx/1esc8gJ2pul5mPoEtS/PnH0/gDrHFKCzqT5uUGiJIweQePmJ45+dLN1DilBaTeG/5UoyAF6BNUHpm7af6TlQN29OfXWOWQEpX5+BdwX4wxXgjrPXQG5d1XHT/+Od2wySAhK9aP18hNDWFDH9ofKclhwRM3rl7n5zx1ubDz0iW2ye0Gp9885bgtxjqCgznXDR8/dtHv/b199bOzgn3S4r9e1oOrs+hEVNPGhP5l/+ev8cZdc1+taUFb7lyEs6Eja347zexkPt4ICWfbj4iKdCGiWqteloJSnz9o/v+KIC8pd3hZ5bZ0jN7x3J+hC1v24EFQ/rHxf1+bisgapet0JSulgJ6Sqd46L+6BPa3Mr8pZdlKvXlaAbkn5K5ap3jgtBl1eEiwdvl6zXlaBsX6CjiAtqHl1S174yPE2ujbsRlDI1QapuIcQFBR44G3ltua1Aql43gpJ+vitVtxDigpri/3S94KK23yX/j88KBwc86GDCgl5OHaV2brX52tQB4i3ohBcdTFjQojGrT3f/4ey6sXPdD8bEBSUbkM0zOD2IdrEPZ+aNmbN01bJvjs29+4BEvcKC/pn1W8Q44teg01sevP2Lk2ZvlPsCXFhQsgF9X6piUa6aLw49akCigpr+paheUUHJe6Ddis7AIYKCWPQR89NH+FmdICrIqwbkShCzeRAvgqCgIlPQVvm6hbhKBHnWgK4SQdtMQdPlqxZDr6CdZ+xSxAQlP+NFopSgVxBrsksRE2T6yReJUoKooGtLSkpiLyUlnMxv1cRhk2tspgwKCRrpXQMSFVSbAidzQwGrrIrAKqqqrHMICTJ7WNYv0drupFsqJxw1lHUxswHJPQd3ha6hRvviwvWqBIU97GHigjp/8+NHHln1dicM2Dti6mk1gkw/uuYh8hAV1FjO8j5TlsfKG2HE+ZkligU5D1GHoKDDhbc0dRlGV/OthX/DMW/UHrVLEhCU7+ElWljQ9PLuCV0Xxji7p7VbiiAgyPwMK3IcohBBQSNXJN6vdDY1MH0pwvElLmbae9rDhG8Uf5V4X+/sfNOXIpww12qEn3NYr/EFT3uYq6FGjJ3Zmrxg9jC5L+Lcok+QqqUI3vYwYUEDhnQzgHvC6pYiNF1dgh5NgZNZ4VIEc85mNr9OTcH3SxHMBrRH5ATUISzo0OuRl+dr3+NmVrgUweMeJiroygJWHflnXRGbZ7MpRwx1SxEWePshLyzopcDq2K1021L2KiezuqUI5of8IIfnqRpBQV+emXh/90RebmVLEcwexmuwOhEU1P/FxPt1A/n5FS1F8PoSJCqo9PnE+7Vybd6hoCVeX4JEBd05I/H+a5Ok6nUoyPxKfoxUbRIICtrJXoq//UVy2OoKh4I872HC90EL2cTVO3b8bDybK1dvrxVkvH9LmLG8cfiJKx9nglo8vwS5GWpc+fsRiYVi3TgTZE7qAB+ZGvH3DDPzNtHptuDq8bcg7y9BJAjha0GbPX4WFCW7gpqTE32cLEUwv3O+T0Xl7vB1Cwp438P8LcgHlyAShPCzIHMTnGxsIGCHnwUV++Aa7WtB5jUaT0bSh58F+eESRIIQPhbU5f2zDsPXghYlBA1VW7UYPt5o0px693vRqlXi440m/TDQ8PVGk764Rvt5dkdvFqRkdocPHgYZft5ocmNC0EiRmpXj7UaTz+SHbTG/VM3yMuce6PptHyezO2x/DiMdoYqVo+0+CM/uKHDmp7cK6oazFMGhn14uKH0pwrGUTf+POfTj6Ugs27+KcMpcijCo4QR2EyP763jT8PAn/BwKktvQUhqvBqsRQUOuhh7m2WC1asmGDUVYDwvMqrGnmpMWYcoMbvJ9U7nJs6ZtiDLMo8Hqxm9HKbt2CI+B+RVcgqO5yf2HcZNLi7jJnw/FTnHBf3QIwoPVOAt/zi1mzx38avL524HOeJObvGUON7mVt3OCBYoHq3H6rCA8WI3TZwXhwWqcPisID1bj9F1BcLAapy8LcgQJApAgwOP87QXeu5MfXtTGTb5/Bzd567e4yeeH8CvviRZBF/g/zNEFrmFn+cn/5s93bwf3yKD0nnj83Mr/kCAACQKQIAAJApAgAAkCkCAACQKQIAAJApAggAZB9eOLqj8Uinju5sLRP+1IDc084NLwlnWQ+KlkoF7QrsC8bVOuOSkQ8RRbuGtJ6IcpoZkHXFoKagz30XzUC6qeYhgXRyxzHnC5/4LI66L8K8nQzAMe7ZWsxrAKEj4VC5QLOsc2RV7nljmP+Ad714jucHncDM084LJ4QmWNYREkfioWKBd0mO2PvK4JOP+t1raPok8Qv5d/yQzNPODF7y08WlWTUrFYNEK5oCYW/YGX11irWNgvQz9IhmYecCLPj1xvRAW5i4YoF9TIWiKvdYw3SSaDM7PZgx3J0MwDTuzMqUZMkLtoiHJBh1j098nWhkViGgaV7UwNzTyw543i03FBrqIxygV9EqiLvD72WYGQhpz5l9JCMw/sqe2ecbTTVTRG/cf8HfcaRseNi50HdJTO7hmaeWDL0aYIFZObzriKxqgX9E7Ok/u+cZ3dFDQL9rDHt0S5lAzNPOAT7WLuo7loGGpsm1A0WeT+/sXuTvJxSmjmAZeYINfRXGiwCiBBABIEIEEAEgQgQQASBCBBABIEIEEAEgQgQQASBCBBABIEIEEAEgQgQQASBCBBABIEIEEAEgQgQQASBCBBABIEIEEAEgTwu6DGQLNh1Oc63Q5JPX4XZDxQfvnTYcu9q9/3glpLVtSW83ca0IrvBRl14dx9Hlbvf0HtxRVe/ZxvFP8LWjk4b7OH1fteUEt4+7JiqbnycvhdUNdt04yLZfwdb7Tid0Ev5B83jF0ebmzqd0GeQ4IAJAhAggAkCECCACQIQIIAJAhAggAkCECCACQIQIIAJAhAggAkCECCACQIQIIAJAhAggAkCECCACQI8H/qIDkYK87uRwAAAABJRU5ErkJggg==" /><!-- --></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dPareto</span>(x, <span class="dv">1000</span>, <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##  [1] 2.000000e-03 2.500000e-04 7.407407e-05 3.125000e-05 1.600000e-05
+##  [6] 9.259259e-06 5.830904e-06 3.906250e-06 2.743484e-06 2.000000e-06</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">dPareto</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5000</span>, <span class="dv">1000</span>, <span class="dv">2</span>), <span class="at">xlab =</span> <span class="st">&quot;x&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;PDF(x)&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The package also provides the quantile function:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qPareto</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span> <span class="sc">/</span> <span class="dv">10</span>, <span class="dv">1000</span>, <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##  [1] 1000.000 1054.093 1118.034 1195.229 1290.994 1414.214 1581.139 1825.742
+##  [9] 2236.068 3162.278      Inf</code></pre>
+</div>
+<div id="simulation" class="section level3">
+<h3>Simulation:</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rPareto</span>(<span class="dv">20</span>, <span class="dv">1000</span>, <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##  [1] 1135.198 1466.802 1878.469 1106.803 1457.658 1259.581 1393.865 1031.917
+##  [9] 1006.379 1075.336 1248.763 1373.328 1198.600 4722.792 2468.677 1064.084
+## [17] 2378.792 4475.481 1176.187 1078.884</code></pre>
+</div>
+<div id="layer-mean" class="section level3">
+<h3>Layer mean:</h3>
+<p>Let <span class="math inline">\(X\sim \text{Pareto}(t,\alpha)\)</span> and <span class="math inline">\(a, c\ge 0\)</span>. Then <span class="math display">\[
+E(\min[c,\max(X-a,0)]) = \int_a^{c+a}(1-F_{t,\alpha}(x))\, dx =: I_{t,\alpha}^{\text{$c$ xs $a$}}
+\]</span> is the layer mean of <span class="math inline">\(c\)</span> xs <span class="math inline">\(a\)</span>, i.e. the expected loss to the layer given a single loss <span class="math inline">\(X\)</span>.</p>
+<p><em>Example:</em> <span class="math inline">\(t=500\)</span>, <span class="math inline">\(\alpha = 2\)</span>, Layer 4000 xs 1000</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_Layer_Mean</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, <span class="dv">2</span>, <span class="at">t =</span> <span class="dv">500</span>)</span></code></pre></div>
+<pre><code>## [1] 200</code></pre>
+</div>
+<div id="layer-variance" class="section level3">
+<h3>Layer variance:</h3>
+<p>Let <span class="math inline">\(X\sim \text{Pareto}(t,\alpha)\)</span> and <span class="math inline">\(a, c\ge 0\)</span>. Then the variance of the layer loss <span class="math inline">\(\min[c,\max(X-a,0)]\)</span> can be calculated with the function <code>Pareto_Layer_Var</code>.</p>
+<p><em>Example:</em> <span class="math inline">\(t=500\)</span>, <span class="math inline">\(\alpha = 2\)</span>, Layer 4000 xs 1000</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_Layer_Var</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, <span class="dv">2</span>, <span class="at">t =</span> <span class="dv">500</span>)</span></code></pre></div>
+<pre><code>## [1] 364719</code></pre>
+</div>
+<div id="why-is-the-pareto-distribution-so-popular" class="section level3">
+<h3>Why is the Pareto distribution so popular?</h3>
+<p><strong>Lemma:</strong></p>
+<ul>
+<li>Let <span class="math inline">\(X \sim \text{Pareto}(t,\alpha )\)</span>. Then <span class="math inline">\(cX \sim \text{Pareto}(ct,\alpha )\)</span> for all <span class="math inline">\(c&gt;0\)</span>.</li>
+<li>Let <span class="math inline">\(X \sim \text{Pareto}(t_{1} ,\alpha )\)</span>. For <span class="math inline">\(t_2 &gt; t_1\)</span> we then have <span class="math inline">\(X|(X&gt;t_2 ) \sim \text{Pareto}(t_2 ,\alpha )\)</span></li>
+</ul>
+<p><strong>Consequences:</strong></p>
+<ul>
+<li>The <em>Pareto alpha</em> is invariant wrt scaling (which implies that <span class="math inline">\(\alpha\)</span> does not depend on currencies and inflation) </li>
+<li>For Pareto distributed data the Pareto alpha does not depend on the reporting threshold </li>
+<li>For layers and thresholds above <span class="math inline">\(t\)</span> the ratio between expected layer losses and/or excess frequencies depends only on <span class="math inline">\(\alpha\)</span> (and not on <span class="math inline">\(t\)</span>)</li>
+</ul>
+</div>
+<div id="pareto-extrapolation" class="section level3">
+<h3>Pareto extrapolation</h3>
+<p>Consider two layers <span class="math inline">\(c_i\)</span> xs <span class="math inline">\(a_i\)</span> and a <span class="math inline">\(\text{Pareto}(t,\alpha)\)</span> distributed severity with sufficiently small <span class="math inline">\(t\)</span>. What is the expected loss of <span class="math inline">\(c_2\)</span> xs <span class="math inline">\(a_2\)</span> given the expected loss of <span class="math inline">\(c_1\)</span> xs <span class="math inline">\(a_1\)</span>?</p>
+<p><em>Example:</em> Assume <span class="math inline">\(\alpha = 2\)</span> and the expected loss of 4000 xs 1000 is 500. Calculate the expected loss of the layer 5000 xs 5000.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_Extrapolation</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, <span class="dv">5000</span>, <span class="dv">5000</span>, <span class="dv">2</span>) <span class="sc">*</span> <span class="dv">500</span></span></code></pre></div>
+<pre><code>## [1] 62.5</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_Extrapolation</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, <span class="dv">5000</span>, <span class="dv">5000</span>, <span class="dv">2</span>, <span class="at">ExpLoss_1 =</span> <span class="dv">500</span>)</span></code></pre></div>
+<pre><code>## [1] 62.5</code></pre>
+</div>
+<div id="pareto-alpha-between-two-layers" class="section level3">
+<h3>Pareto alpha between two layers:</h3>
+<p>Given the expected losses of two layers, there is typically a unique Pareto alpha <span class="math inline">\(\alpha\)</span> which is consistent with the ratio of the expected layer losses.</p>
+<p><em>Example:</em> Expected loss of 4000 xs 1000 is 500. Expected loss of 5000 xs 5000 is 62.5. Alpha between the two layers:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_Find_Alpha_btw_Layers</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, <span class="dv">500</span>, <span class="dv">5000</span>, <span class="dv">5000</span>, <span class="fl">62.5</span>)</span></code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<p>Check: see previous example</p>
+</div>
+<div id="pareto-alpha-between-a-frequency-and-layer" class="section level3">
+<h3>Pareto alpha between a frequency and layer:</h3>
+<p>Given the expected excess frequency at a threshold and the expected loss of a layer, then there is typically a unique Pareto alpha <span class="math inline">\(\alpha\)</span> which is consistent with this data.</p>
+<p><em>Example:</em> Expected frequency in excess of 500 is 2.5. Expected loss of 4000 xs 1000 is 500. Alpha between the frequency and the layer:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_Find_Alpha_btw_FQ_Layer</span>(<span class="dv">500</span>, <span class="fl">2.5</span>, <span class="dv">4000</span>, <span class="dv">1000</span>, <span class="dv">500</span>)</span></code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<p>Check:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_Layer_Mean</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, <span class="dv">2</span>, <span class="at">t =</span> <span class="dv">500</span>) <span class="sc">*</span> <span class="fl">2.5</span></span></code></pre></div>
+<pre><code>## [1] 500</code></pre>
+</div>
+<div id="matching-the-expected-losses-of-two-layers" class="section level3">
+<h3>Matching the expected losses of two layers:</h3>
+<p>Given the expected losses of two layers, we can use these techniques to obtain a Poisson-Pareto model which matches the expected loss of both layers.</p>
+<p><em>Example:</em> Expected loss of 30 xs 10 is 26.66 (Burning Cost). Expected loss of 60 xs 40 is 15.95 (Exposure model).</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_Find_Alpha_btw_Layers</span>(<span class="dv">30</span>, <span class="dv">10</span>, <span class="fl">26.66</span>, <span class="dv">60</span>, <span class="dv">40</span>, <span class="fl">15.95</span>)</span></code></pre></div>
+<pre><code>## [1] 1.086263</code></pre>
+<p>Frequency @ 10:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fl">26.66</span> <span class="sc">/</span> <span class="fu">Pareto_Layer_Mean</span>(<span class="dv">30</span>, <span class="dv">10</span>, <span class="fl">1.086263</span>)</span></code></pre></div>
+<pre><code>## [1] 2.040392</code></pre>
+<p>A collective model <span class="math inline">\(\sum_{n=1}^NX_n\)</span> with <span class="math inline">\(X_N\sim \text{Pareto}(10, 1.09)\)</span> and <span class="math inline">\(N\sim \text{Poisson}(2.04)\)</span> matches both expected layer losses.</p>
+</div>
+<div id="frequency-extrapolation-and-alpha-between-frequencies" class="section level3">
+<h3>Frequency extrapolation and alpha between frequencies:</h3>
+<p>Given the frequency <span class="math inline">\(f_1\)</span> in excess of <span class="math inline">\(t_1\)</span> the frequency <span class="math inline">\(f_2\)</span> in excess of <span class="math inline">\(t_2\)</span> can directly be calculated as follows: <span class="math display">\[
+f_2 = f_1 \cdot \left(\frac{t_1}{t_2}\right)^\alpha
+\]</span> Vice versa, we can calculate the Pareto alpha, if the two excess frequencies <span class="math inline">\(f_1\)</span> and <span class="math inline">\(f_2\)</span> are given: <span class="math display">\[
+\alpha = \frac{\log(f_2/f_1)}{\log(t_1/t_2)}.
+\]</span></p>
+<p><em>Example:</em></p>
+<p>Expected frequency excess 1000 is 2. What is the expected frequency excess 4000 if we have a Pareto alpha of 2.5?</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>t_1 <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>f_1 <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>t_2 <span class="ot">&lt;-</span> <span class="dv">4000</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>(f_2 <span class="ot">&lt;-</span> f_1 <span class="sc">*</span> (t_1 <span class="sc">/</span> t_2)<span class="sc">^</span><span class="fl">2.5</span>)</span></code></pre></div>
+<pre><code>## [1] 0.0625</code></pre>
+<p>Vice versa:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_Find_Alpha_btw_FQs</span>(t_1, f_1, t_2, f_2)</span></code></pre></div>
+<pre><code>## [1] 2.5</code></pre>
+</div>
+<div id="maximum-likelihood-estimation-of-the-parameter-alpha" class="section level3">
+<h3>Maximum likelihood estimation of the parameter alpha</h3>
+<p>For <span class="math inline">\(i=1,\dots,n\)</span> let <span class="math inline">\(X_i\sim \text{Pareto}(t,\alpha)\)</span> be Pareto distributed observations. Then we have the ML estimator <span class="math display">\[
+\hat{\alpha}^{ML}=\frac{n}{\sum_{i=1}^n\log(X_i/t)}.
+\]</span> <em>Example:</em></p>
+<p>Pareto distributed losses with a reporting threshold of <span class="math inline">\(t=1000\)</span> and <span class="math inline">\(\alpha = 2\)</span>:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">rPareto</span>(<span class="dv">1000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="dv">2</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 2.020135</code></pre>
+<p>In reinsurance, sometimes large loss data from different sources are used for severity fits. Then the losses are typically only available in excess of certain reporting thresholds which may vary by data source. Assume that two data sources each contain 5000 losses in excess of 1000, which are Pareto distributed with an alpha of 2 but from data source 2 we only know the losses exceeding a reporting threshold of 3000. If we apply the standard ML estimator with a threshold of 1000, then we obtain an alpha which is too low, since we ignore that the loss data is not complete in excess of 1000:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>losses_1 <span class="ot">&lt;-</span> <span class="fu">rPareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="dv">2</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> <span class="fu">rPareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="dv">2</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>reported <span class="ot">&lt;-</span> losses_2 <span class="sc">&gt;</span> <span class="dv">3000</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> losses_2[reported]</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">c</span>(losses_1, losses_2)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 1.648832</code></pre>
+<p>In the function <code>Pareto_ML_Estimator_Alpha</code> the user can define reporting threshold for each loss in order to handle this situation:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1000</span>, <span class="fu">length</span>(losses_1))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">3000</span>, <span class="fu">length</span>(losses_2))</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(reporting_thresholds_1, reporting_thresholds_2)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
+<pre><code>## [1] 2.006693</code></pre>
+<p>Now, assume that the underlying policies have limits of 5000 or 10000 and that a loss is censored if it exceeds the respective limit. If the underlying losses are Pareto distributed before they are censored then ML estimation leads to a too large value for alpha:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>limits <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">5000</span>, <span class="dv">10000</span>), <span class="fu">length</span>(losses), <span class="at">replace =</span> T)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> losses <span class="sc">&gt;</span> limits</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>losses[censored] <span class="ot">&lt;-</span> limits[censored]</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>reported <span class="ot">&lt;-</span> losses <span class="sc">&gt;</span> reporting_thresholds</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> losses[reported]</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> reporting_thresholds[reported]</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
+<pre><code>## [1] 2.100759</code></pre>
+<p>In order to deal with this situation the function allows to specify for each loss if it is censored or not:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pareto_ML_Estimator_Alpha</span>(losses, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">reporting_thresholds =</span> reporting_thresholds, </span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">is.censored =</span> censored)</span></code></pre></div>
+<pre><code>## [1] 2.004925</code></pre>
+</div>
+<div id="truncation" class="section level3">
+<h3>Truncation</h3>
+<p>Let <span class="math inline">\(X\sim \text{Pareto}(t,\alpha)\)</span> and <span class="math inline">\(T&gt;t\)</span>. Then <span class="math inline">\(X|(X&lt;T)\)</span> has a <em>truncated Pareto distribution</em>. The Pareto functions mentioned above are also available for the truncated Pareto distribution.</p>
+</div>
+</div>
+<div id="piecewise-pareto-distribution" class="section level2">
+<h2>Piecewise Pareto distribution</h2>
+<p><strong>Definition:</strong> Let <span class="math inline">\(\mathbf{t}:=(t_1,\dots,t_n)\)</span> be a vector of thresholds with <span class="math inline">\(0&lt;t_1&lt;\dots&lt;t_n&lt;t_{n+1}:=+\infty\)</span> and let <span class="math inline">\(\boldsymbol\alpha:=(\alpha_1,\dots,\alpha_n)\)</span> be a vector of Pareto alphas with <span class="math inline">\(\alpha_i\ge 0\)</span> and <span class="math inline">\(\alpha_n&gt;0\)</span>. The <em>piecewise Pareto</em> distribution} <span class="math inline">\(\text{PPareto}(\mathbf{t},\boldsymbol\alpha)\)</span> is defined by the distribution function <span class="math display">\[
+F_{\mathbf{t},\boldsymbol\alpha}(x):=\begin{cases}
+0 &amp; \text{ for $x&lt;t_1$} \\
+\displaystyle 1-\left(\frac{t_{k}}{x}\right)^{\alpha_k}\prod_{i=1}^{k-1}\left(\frac{t_i}{t_{i+1}}\right)^{\alpha_i} &amp; \text{ for $x\in [t_k,t_{k+1}).$}
+\end{cases}
+\]</span></p>
+<p>The family of piecewise Pareto distributions is very flexible:</p>
+<p><strong>Proposition:</strong> The set of Piecewise Pareto distributions is dense in the space of all positive-valued distributions (with respect to the Lévy metric).</p>
+<p>This means that we can approximate any positive valued distribution as good as we want with piecewise Pareto. A very good approximation typically comes at the cost of many Pareto pieces. Piecewise Pareto is often a good alternative to a discrete distribution, since it is much better to handle!</p>
+<p>The Pareto package also provides functions for the piecewise Pareto distribution. For instance:</p>
+<div id="distribution-function" class="section level3">
+<h3>Distribution function</h3>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">*</span> <span class="dv">1000</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>, <span class="dv">4000</span>)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">20</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pPiecewisePareto</span>(x, t, alpha)</span></code></pre></div>
+<pre><code>##  [1] 0.0000000 0.7500000 0.8333333 0.9296875 0.9991894 0.9999789 0.9999990
+##  [8] 0.9999999 1.0000000 1.0000000</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">pPiecewisePareto</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5000</span>, t, alpha), <span class="at">xlab =</span> <span class="st">&quot;x&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;CDF(x)&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="density" class="section level3">
+<h3>Density</h3>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dPiecewisePareto</span>(x, t, alpha)</span></code></pre></div>
+<pre><code>##  [1] 2.000000e-03 1.250000e-04 1.666667e-04 3.515625e-04 3.242592e-06
+##  [6] 7.048328e-08 2.768239e-09 1.676381e-10 1.413089e-11 1.546188e-12</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">dPiecewisePareto</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5000</span>, t, alpha), <span class="at">xlab =</span> <span class="st">&quot;x&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;PDF(x)&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="simulation-1" class="section level3">
+<h3>Simulation</h3>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rPiecewisePareto</span>(<span class="dv">20</span>, t, alpha)</span></code></pre></div>
+<pre><code>##  [1] 1266.505 1288.670 1082.296 2143.533 2117.197 1144.358 4058.949 1202.623
+##  [9] 1971.416 4069.666 1337.976 2304.814 1338.505 3227.172 1913.686 2236.270
+## [17] 1214.087 1331.992 1177.053 1188.265</code></pre>
+</div>
+<div id="layer-mean-1" class="section level3">
+<h3>Layer mean</h3>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_Layer_Mean</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, t, alpha)</span></code></pre></div>
+<pre><code>## [1] 826.6969</code></pre>
+</div>
+<div id="layer-variance-1" class="section level3">
+<h3>Layer variance</h3>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_Layer_Var</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, t, alpha)</span></code></pre></div>
+<pre><code>## [1] 922221.2</code></pre>
+</div>
+<div id="maximum-likelihood-estimation-of-the-alphas" class="section level3">
+<h3>Maximum likelihood estimation of the alphas</h3>
+<p>Let <span class="math inline">\(\mathbf{t}:=(t_1,\dots,t_n)\)</span> be a vector of thresholds and let <span class="math inline">\(\boldsymbol\alpha:=(\alpha_1,\dots,\alpha_n)\)</span> be a vector of Pareto alphas. For <span class="math inline">\(i=1,\dots,n\)</span> let <span class="math inline">\(X_i\sim \text{PPareto}(\mathbf{t},\boldsymbol\alpha)\)</span>. If the vector <span class="math inline">\(\mathbf{t}\)</span> is known, then the parameter vector <span class="math inline">\(\boldsymbol\alpha\)</span> can be estimated with maximum likelihood.</p>
+<p><em>Example:</em></p>
+<p>Piecewise Pareto distributed losses with <span class="math inline">\(\mathbf{t}:=(1000,\,2000,\, 3000)\)</span> and <span class="math inline">\(\boldsymbol\alpha:=(1,\, 2,\, 3)\)</span>:</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">rPiecewisePareto</span>(<span class="dv">10000</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>))</span></code></pre></div>
+<pre><code>## [1] 0.9905293 2.0514411 2.9437609</code></pre>
+<p>Reporting thresholds and censoring of losses can be taken into account as described for the function <code>Pareto_ML_Estimator_Alpha</code>.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>losses_1 <span class="ot">&lt;-</span> <span class="fu">rPiecewisePareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> <span class="fu">rPiecewisePareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>reported <span class="ot">&lt;-</span> losses_2 <span class="sc">&gt;</span> <span class="dv">3000</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> losses_2[reported]</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">c</span>(losses_1, losses_2)</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>))</span></code></pre></div>
+<pre><code>## [1] 0.7673911 1.1657748 2.9811903</code></pre>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1000</span>, <span class="fu">length</span>(losses_1))</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">3000</span>, <span class="fu">length</span>(losses_2))</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(reporting_thresholds_1, reporting_thresholds_2)</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), </span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
+<pre><code>## [1] 1.019078 1.993370 2.981190</code></pre>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>limits <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">2500</span>, <span class="dv">5000</span>, <span class="dv">10000</span>), <span class="fu">length</span>(losses), <span class="at">replace =</span> T)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> losses <span class="sc">&gt;</span> limits</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>losses[censored] <span class="ot">&lt;-</span> limits[censored]</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>reported <span class="ot">&lt;-</span> losses <span class="sc">&gt;</span> reporting_thresholds</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> losses[reported]</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> reporting_thresholds[reported]</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> censored[reported]</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), </span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
+<pre><code>## [1] 1.019078 2.881650 3.417452</code></pre>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">PiecewisePareto_ML_Estimator_Alpha</span>(losses, <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), </span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">reporting_thresholds =</span> reporting_thresholds, </span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">is.censored =</span> censored)</span></code></pre></div>
+<pre><code>## [1] 1.019078 2.007762 3.037483</code></pre>
+</div>
+<div id="truncation-1" class="section level3">
+<h3>Truncation</h3>
+<p>The package also provides truncated versions of the piecewise Pareto distribution. There are two options available:</p>
+<ul>
+<li><code>truncation_type = &#39;lp&#39;</code>: Below the largest threshold <span class="math inline">\(t_n\)</span>, the distribution function equals the distribution of the piecewise Pareto distribution without truncation. The last Pareto piece, however, is truncated at <code>truncation</code></li>
+<li><code>truncation_type = &#39;wd&#39;</code>: The whole piecewise Pareto distribution is truncated at `truncation’</li>
+</ul>
+</div>
+</div>
+<div id="matching-a-tower-of-layer-losses" class="section level2">
+<h2>Matching a tower of layer losses</h2>
+<p>The Pareto distribution can be used to build a collective model which matches the expected loss of two layers. We can use piecewise Pareto if we want to match the expected loss of more than two layers.</p>
+<p>Consider a sequence of attachment points <span class="math inline">\(0 &lt; a_1 &lt;\dots &lt; a_n&lt;a_{n+1}:=+\infty\)</span>. Let <span class="math inline">\(c_i:=a_{i+1}-a_i\)</span> and let <span class="math inline">\(e_i\)</span> be the expected loss of the layer <span class="math inline">\(c_i\)</span> xs <span class="math inline">\(a_i\)</span>. Moreover, let <span class="math inline">\(f_1\)</span> be the expected frequency in excess of <span class="math inline">\(a_1\)</span>.</p>
+<p>The following matching algorithm uses one Pareto piece per layer and is straight forward:</p>
+<ul>
+<li>Calculate the Pareto alpha <span class="math inline">\(\alpha_1\)</span> between the excess frequency <span class="math inline">\(f_1\)</span> and the layer <span class="math inline">\(c_1\)</span> xs <span class="math inline">\(a_1\)</span></li>
+<li>Calculate the frequency <span class="math inline">\(f_2\)</span> in excess of <span class="math inline">\(a_2\)</span>: <span class="math inline">\(f_2:=(a_1/a_2)^{\alpha_1}\cdot f_1\)</span></li>
+<li>Calculate the Pareto alpha <span class="math inline">\(\alpha_2\)</span> between the excess frequency <span class="math inline">\(f_2\)</span> and the layer <span class="math inline">\(c_2\)</span> xs <span class="math inline">\(a_2\)</span></li>
+<li>Calculate the frequency <span class="math inline">\(f_3\)</span> in excess of <span class="math inline">\(a_3\)</span>: <span class="math inline">\(f_3:=(a_2/a_3)^{\alpha_2}\cdot f_3\)</span></li>
+<li><span class="math inline">\(\dots\)</span> </li>
+<li>Use a collective model <span class="math inline">\(\sum_{n=1}^NX_n\)</span> with <span class="math inline">\(E(N)=f_1\)</span> and <span class="math inline">\(X_n\sim\text{PPareto}(\mathbf{t},\boldsymbol\alpha)\)</span>.</li>
+</ul>
+<p>This approach always works for three layers, but it often does not work if we have three or more layers. For instance, Riegel (2018) shows that it does not work for the following example:</p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th align="right">Cover <span class="math inline">\(c_i\)</span></th>
+<th align="right">Att. Pt. <span class="math inline">\(a_i\)</span></th>
+<th align="right">Exp. Loss <span class="math inline">\(e_i\)</span></th>
+<th align="right">Rate on Line <span class="math inline">\(e_i/c_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td align="right">500</td>
+<td align="right">1000</td>
+<td align="right">100</td>
+<td align="right">0.20</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td align="right">500</td>
+<td align="right">1500</td>
+<td align="right">90</td>
+<td align="right">0.18</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td align="right">500</td>
+<td align="right">2000</td>
+<td align="right">50</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td align="right">500</td>
+<td align="right">2500</td>
+<td align="right">40</td>
+<td align="right">0.08</td>
+</tr>
+</tbody>
+</table>
+<p>The Pareto package provides a more complex matching approach that uses two Pareto pieces per layer. Riegel (2018) shows that this approach works for an arbitrary number of layers with consistent expected losses.</p>
+<p><em>Example:</em></p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>attachment_points <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">1500</span>, <span class="dv">2000</span>, <span class="dv">2500</span>, <span class="dv">3000</span>)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>exp_losses <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">90</span>, <span class="dv">50</span>, <span class="dv">40</span>, <span class="dv">100</span>)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">PiecewisePareto_Match_Layer_Losses</span>(attachment_points, exp_losses)</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div>
+<pre><code>## 
+## Panjer &amp; Piecewise Pareto model
+## 
+## Collective model with a Poisson distribution for the claim count and a Piecewise Pareto distributed severity.
+## 
+## Poisson Distribution:
+## Expected Frequency:   0.2136971
+## 
+## Piecewise Pareto Distribution:
+## Thresholds:         1000   1500   1932.059   2000   2147.531   2500   2847.756   3000
+## Alphas:              0.3091209   0.1753613   9.685189   3.538534   0.817398   0.7663698   5.086828   2.845488
+## The distribution is not truncated.
+## 
+## Status:               0
+## Comments:             OK</code></pre>
+<p>The function <code>PiecewisePareto_Match_Layer_Losses</code> returns a <code>PPP_Model</code> object (PPP stands for Panjer &amp; Piecewise Pareto) which contains the information required to specify a collective model with a Panjer distributed claim count and a piecewise Pareto distributed severity. The results can be checked using the attributes <code>FQ</code>, <code>t</code> and <code>alpha</code> of the object:</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">PiecewisePareto_Layer_Mean</span>(<span class="dv">500</span>, <span class="dv">1000</span>, fit<span class="sc">$</span>t, fit<span class="sc">$</span>alpha) <span class="sc">*</span> fit<span class="sc">$</span>FQ,</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">PiecewisePareto_Layer_Mean</span>(<span class="dv">500</span>, <span class="dv">1500</span>, fit<span class="sc">$</span>t, fit<span class="sc">$</span>alpha) <span class="sc">*</span> fit<span class="sc">$</span>FQ,</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">PiecewisePareto_Layer_Mean</span>(<span class="dv">500</span>, <span class="dv">2000</span>, fit<span class="sc">$</span>t, fit<span class="sc">$</span>alpha) <span class="sc">*</span> fit<span class="sc">$</span>FQ,</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">PiecewisePareto_Layer_Mean</span>(<span class="dv">500</span>, <span class="dv">2500</span>, fit<span class="sc">$</span>t, fit<span class="sc">$</span>alpha) <span class="sc">*</span> fit<span class="sc">$</span>FQ,</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">PiecewisePareto_Layer_Mean</span>(<span class="cn">Inf</span>, <span class="dv">3000</span>, fit<span class="sc">$</span>t, fit<span class="sc">$</span>alpha) <span class="sc">*</span> fit<span class="sc">$</span>FQ)</span></code></pre></div>
+<pre><code>## [1] 100  90  50  40 100</code></pre>
+<p>There are, however, functions which can directly use PPP_Models:</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>covers <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">diff</span>(attachment_points), <span class="cn">Inf</span>)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Layer_Mean</span>(fit, covers, attachment_points)</span></code></pre></div>
+<pre><code>## [1] 100  90  50  40 100</code></pre>
+</div>
+<div id="matching-reference-information" class="section level2">
+<h2>Matching reference information</h2>
+<p>The function <code>PiecewisePareto_Match_Layer_Losses</code> can be used to match the expected losses of a complete tower of layers. If we want to match the expected losses of some reference layers which do not form a complete tower then it is more convenient to use the function <code>Fit_References</code>. Also excess frequencies can be provided as reference information. The function can be seen as a user interface for <code>PiecewisePareto_Match_Layer_Losses</code>:</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>  covers <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">1000</span>, <span class="dv">1000</span>)</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  att_points <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">5000</span>)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  exp_losses <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">50</span>, <span class="dv">10</span>)</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4000</span>, <span class="dv">10000</span>)</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>  fqs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.04</span>, <span class="fl">0.005</span>)</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">Fit_References</span>(covers, att_points, exp_losses, thresholds, fqs)</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Layer_Mean</span>(fit, covers, att_points)</span></code></pre></div>
+<pre><code>## [1] 100  50  10</code></pre>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Excess_Frequency</span>(fit, thresholds)</span></code></pre></div>
+<pre><code>## [1] 0.040 0.005</code></pre>
+<p>If the package <code>lpSolve</code> is installed then the funcion <code>Fit_References</code> can handle ovelapping layers.</p>
+</div>
+<div id="interpolation-of-pml-curves" class="section level2">
+<h2>Interpolation of PML curves</h2>
+<p>The function <code>Fit_PML_Curve</code> can be used fit a <code>PPP_Model</code> that reproduces and interpolates the information provided in the PML curve. A PML curve is a table containing return periods and the corresponding loss amounts:</p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th align="right">Return Period <span class="math inline">\(r_i\)</span></th>
+<th align="right">Amount <span class="math inline">\(x_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td align="right">1</td>
+<td align="right">1000</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td align="right">5</td>
+<td align="right">4000</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td align="right">10</td>
+<td align="right">7000</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td align="right">20</td>
+<td align="right">10000</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td align="right">50</td>
+<td align="right">13000</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td align="right">100</td>
+<td align="right">14000</td>
+</tr>
+</tbody>
+</table>
+<p>The information contained in such a PML curve can be used to create a <code>PPP_Model</code> that has the expected excess frequency <span class="math inline">\(1/r_i\)</span> at <span class="math inline">\(x_i\)</span>.</p>
+<p><em>Example:</em></p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>return_periods <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>amounts <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">4000</span>, <span class="dv">7000</span>, <span class="dv">10000</span>, <span class="dv">13000</span>, <span class="dv">14000</span>)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">Fit_PML_Curve</span>(return_periods, amounts)</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">/</span> <span class="fu">Excess_Frequency</span>(fit, amounts)</span></code></pre></div>
+<pre><code>## [1]   1   5  10  20  50 100</code></pre>
+</div>
+<div id="ppp_models-panjer-piecewise-pareto-models" class="section level2">
+<h2>PPP_Models (Panjer &amp; Piecewise Pareto Models)</h2>
+<p>A <code>PPP_Model</code> object contains the information required to specify a collective model with a Panjer distributed claim count and a piecewise Pareto distributed severity.</p>
+<p><strong>Claim count distribution:</strong> The Panjer class contains the binomial distribution, the Poisson distribution and the negative binomial distribution. The distribution of the claim count <span class="math inline">\(N\)</span> is specified by the expected frequency <span class="math inline">\(E(N)\)</span> (attribute <code>FQ</code> of the object) and the dispersion <span class="math inline">\(D(N):=Var(N)/E(N)\)</span> (attribute <code>dispersion</code> of the object). We have the following cases:</p>
+<ul>
+<li><code>dispersion &lt; 1</code>: binomial distribution</li>
+<li><code>dispersion = 1</code>: Poisson distribution</li>
+<li><code>dispersion &gt; 1</code>: negative binomial distribution.</li>
+</ul>
+<p><strong>Severity distribution:</strong> The piecewise Pareto distribution is specified by the vectors <code>t</code>, <code>alpha</code>, <code>truncation</code> and <code>truncation_type</code>.</p>
+<p>The function <code>PiecewisePareto_Match_Layer_Losses</code> returns <code>PPP_Model</code> object. Such an object can also be directly created using the constructor function:</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>PPPM <span class="ot">&lt;-</span> <span class="fu">PPP_Model</span>(<span class="at">FQ =</span> <span class="dv">2</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), </span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">truncation =</span> <span class="dv">10000</span>, <span class="at">truncation_type =</span> <span class="st">&quot;wd&quot;</span>, <span class="at">dispersion =</span> <span class="fl">1.5</span>)</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>PPPM</span></code></pre></div>
+<pre><code>## 
+## Panjer &amp; Piecewise Pareto model
+## 
+## Collective model with a Negative Binomial distribution for the claim count and a Piecewise Pareto distributed severity.
+## 
+## Negative Binomial Distribution:
+## Expected Frequency:   2
+## Dispersion:           1.5 (i.e. contagion = 0.25)
+## 
+## Piecewise Pareto Distribution:
+## Thresholds:         1000   2000
+## Alphas:              1   2
+## Truncation:           10000
+## Truncation Type:      &#39;wd&#39;
+## 
+## Status:               0
+## Comments:             OK</code></pre>
+<div id="expected-loss-standard-deviation-and-variance-for-reinsurance-layers" class="section level3">
+<h3>Expected Loss, Standard Deviation and Variance for Reinsurance Layers</h3>
+<p>A <code>PPP_Model</code> can directly be used to calculate the expected loss, the standard deviation or the variance of a reinsurance layer: function:</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>PPPM <span class="ot">&lt;-</span> <span class="fu">PPP_Model</span>(<span class="at">FQ =</span> <span class="dv">2</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), </span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">truncation =</span> <span class="dv">10000</span>, <span class="at">truncation_type =</span> <span class="st">&quot;wd&quot;</span>, <span class="at">dispersion =</span> <span class="fl">1.5</span>)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Layer_Mean</span>(PPPM, <span class="dv">4000</span>, <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 2475.811</code></pre>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Layer_Sd</span>(PPPM, <span class="dv">4000</span>, <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 2676.332</code></pre>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Layer_Var</span>(PPPM, <span class="dv">4000</span>, <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 7162754</code></pre>
+</div>
+<div id="expected-excess-frequency" class="section level3">
+<h3>Expected Excess Frequency</h3>
+<p>A <code>PPP_Model</code> can directly be used to calculate the expected frequency in excess of a threshold:</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>PPPM <span class="ot">&lt;-</span> <span class="fu">PPP_Model</span>(<span class="at">FQ =</span> <span class="dv">2</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), </span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">truncation =</span> <span class="dv">10000</span>, <span class="at">truncation_type =</span> <span class="st">&quot;wd&quot;</span>, <span class="at">dispersion =</span> <span class="fl">1.5</span>)</span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">5000</span>, <span class="dv">10000</span>, <span class="cn">Inf</span>)</span>
+<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Excess_Frequency</span>(PPPM, thresholds)</span></code></pre></div>
+<pre><code>## [1] 2.0000000 2.0000000 0.9795918 0.1224490 0.0000000 0.0000000</code></pre>
+</div>
+<div id="simulation-of-losses" class="section level3">
+<h3>Simulation of Losses</h3>
+<p>A <code>PPP_Model</code> can directly be used to simulate losses with the corresponding collective model:</p>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>PPPM <span class="ot">&lt;-</span> <span class="fu">PPP_Model</span>(<span class="at">FQ =</span> <span class="dv">2</span>, <span class="at">t =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>), <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), </span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">truncation =</span> <span class="dv">10000</span>, <span class="at">truncation_type =</span> <span class="st">&quot;wd&quot;</span>, <span class="at">dispersion =</span> <span class="fl">1.5</span>)</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Simulate_Losses</span>(PPPM, <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##           [,1]     [,2]     [,3]     [,4]     [,5]     [,6]
+##  [1,] 2591.034      NaN      NaN      NaN      NaN      NaN
+##  [2,] 1160.603 7632.323      NaN      NaN      NaN      NaN
+##  [3,] 1943.672 1464.815      NaN      NaN      NaN      NaN
+##  [4,]      NaN      NaN      NaN      NaN      NaN      NaN
+##  [5,] 6189.602 2468.231 3670.106      NaN      NaN      NaN
+##  [6,]      NaN      NaN      NaN      NaN      NaN      NaN
+##  [7,] 5415.427 3147.171 2817.774      NaN      NaN      NaN
+##  [8,] 2523.405 1086.841 1735.854 2584.448 1051.463 5193.801
+##  [9,]      NaN      NaN      NaN      NaN      NaN      NaN
+## [10,] 1614.787 2094.392 7992.748      NaN      NaN      NaN</code></pre>
+<p>The function <code>Simulate_Losses</code> returns a matrix where each row contains the losses from one simulation.</p>
+<p>Note that for a given expected frequency <code>FQ</code> not every dispersion <code>dispersion &lt; 1</code> is possible for the binomial distribution. In this case a binomial distribution with the smallest dispersion larger than or equal to <code>dispersion</code> is used for the simulation.</p>
+</div>
+</div>
+<div id="generalized-pareto-distribution" class="section level2">
+<h2>Generalized Pareto Distribution</h2>
+<p><strong>Definition:</strong> Let <span class="math inline">\(t&gt;0\)</span> and <span class="math inline">\(\alpha_\text{ini}, \alpha_\text{tail}&gt;0\)</span>. The <em>generalized Pareto distribution</em> <span class="math inline">\(\text{GenPareto}(t,\alpha_\text{ini}, \alpha_\text{tail})\)</span> is defined by the distribution function <span class="math display">\[
+F_{t,\alpha_\text{ini}, \alpha_\text{tail}}(x):=\begin{cases}
+0 &amp; \text{ for $x\le t$} \\
+\displaystyle 1-\left(1+\frac{\alpha_\text{ini}}{\alpha_\text{tail}} \left(\frac{x}{t}-1\right)\right)^{-\alpha_\text{tail}} &amp; \text{ for $x&gt;t$.}
+\end{cases}
+\]</span> We do not the standard parameterization from extreme value theory but the parameterization from Riegel (2008) which is useful in a reinsurance context.</p>
+<div id="distribution-function-and-density-1" class="section level3">
+<h3>Distribution function and density</h3>
+<p>The functions <code>pGenPareto</code> and <code>dGenPareto</code> provide the distribution function and the density function of the Pareto distribution:</p>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">*</span> <span class="dv">1000</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pGenPareto</span>(x, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##  [1] 0.0000000 0.5555556 0.7500000 0.8400000 0.8888889 0.9183673 0.9375000
+##  [8] 0.9506173 0.9600000 0.9669421</code></pre>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">pGenPareto</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5000</span>, <span class="dv">1000</span>, <span class="dv">1</span>, <span class="dv">2</span>), <span class="at">xlab =</span> <span class="st">&quot;x&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;CDF(x)&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dGenPareto</span>(x, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##  [1] 1.000000e-03 2.962963e-04 1.250000e-04 6.400000e-05 3.703704e-05
+##  [6] 2.332362e-05 1.562500e-05 1.097394e-05 8.000000e-06 6.010518e-06</code></pre>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">dGenPareto</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5000</span>, <span class="dv">1000</span>, <span class="dv">1</span>, <span class="dv">2</span>), <span class="at">xlab =</span> <span class="st">&quot;x&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;PDF(x)&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The package also provides the quantile function:</p>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qGenPareto</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span> <span class="sc">/</span> <span class="dv">10</span>, <span class="dv">1000</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##  [1] 1000.000 1108.185 1236.068 1390.457 1581.989 1828.427 2162.278 2651.484
+##  [9] 3472.136 5324.555      Inf</code></pre>
+</div>
+<div id="simulation-2" class="section level3">
+<h3>Simulation:</h3>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rGenPareto</span>(<span class="dv">20</span>, <span class="dv">1000</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##  [1]  1804.616  1390.680  1632.321  5095.260  1059.864  2291.837  2093.343
+##  [8]  1119.379  1900.114  1172.185  1535.759 10934.866  1217.600  1268.356
+## [15]  3779.441  5299.947  4601.364  2197.125  5263.906  1438.987</code></pre>
+</div>
+<div id="layer-mean-2" class="section level3">
+<h3>Layer mean:</h3>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_Layer_Mean</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, <span class="at">t =</span> <span class="dv">500</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## [1] 484.8485</code></pre>
+</div>
+<div id="layer-variance-2" class="section level3">
+<h3>Layer variance:</h3>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_Layer_Var</span>(<span class="dv">4000</span>, <span class="dv">1000</span>, <span class="at">t =</span> <span class="dv">500</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## [1] 908942.5</code></pre>
+</div>
+<div id="maximum-likelihood-estimation-of-the-alpha_ini-and-alpha_tail" class="section level3">
+<h3>Maximum likelihood estimation of the alpha_ini and alpha_tail</h3>
+<p>Let <span class="math inline">\(t&gt;0\)</span> and <span class="math inline">\(\alpha_\text{ini}, \alpha_\text{tail}&gt;0\)</span> and let <span class="math inline">\(X_i\sim \text{GenPareto}(t,\alpha_\text{ini}, \alpha_\text{tail})\)</span>. For known <span class="math inline">\(t\)</span> the parameters <span class="math inline">\(\alpha_\text{ini}, \alpha_\text{tail}\)</span> can be estimated with maximum likelihood.</p>
+<p><em>Example:</em></p>
+<p>Generalized Pareto distributed losses with <span class="math inline">\(t:=1000\)</span> and <span class="math inline">\(\alpha_\text{ini}=1\)</span>, <span class="math inline">\(\alpha_\text{tail}=2\)</span>:</p>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">rGenPareto</span>(<span class="dv">10000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 0.9884823 1.9297759</code></pre>
+<p>Reporting thresholds and censoring of losses can be taken into account as described for the function <code>Pareto_ML_Estimator_Alpha</code>.</p>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>losses_1 <span class="ot">&lt;-</span> <span class="fu">rGenPareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> <span class="fu">rGenPareto</span>(<span class="dv">5000</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>)</span>
+<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a>reported <span class="ot">&lt;-</span> losses_2 <span class="sc">&gt;</span> <span class="dv">3000</span></span>
+<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>losses_2 <span class="ot">&lt;-</span> losses_2[reported]</span>
+<span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">c</span>(losses_1, losses_2)</span>
+<span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 0.6676158 2.0672529</code></pre>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1000</span>, <span class="fu">length</span>(losses_1))</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>reporting_thresholds_2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">3000</span>, <span class="fu">length</span>(losses_2))</span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(reporting_thresholds_1, reporting_thresholds_2)</span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>, </span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>                             <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
+<pre><code>## [1] 1.024487 1.923703</code></pre>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>limits <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">2500</span>, <span class="dv">5000</span>, <span class="dv">10000</span>), <span class="fu">length</span>(losses), <span class="at">replace =</span> T)</span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> losses <span class="sc">&gt;</span> limits</span>
+<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>losses[censored] <span class="ot">&lt;-</span> limits[censored]</span>
+<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a>reported <span class="ot">&lt;-</span> losses <span class="sc">&gt;</span> reporting_thresholds</span>
+<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> losses[reported]</span>
+<span id="cb109-6"><a href="#cb109-6" aria-hidden="true" tabindex="-1"></a>reporting_thresholds <span class="ot">&lt;-</span> reporting_thresholds[reported]</span>
+<span id="cb109-7"><a href="#cb109-7" aria-hidden="true" tabindex="-1"></a>censored <span class="ot">&lt;-</span> censored[reported]</span>
+<span id="cb109-8"><a href="#cb109-8" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>, </span>
+<span id="cb109-9"><a href="#cb109-9" aria-hidden="true" tabindex="-1"></a>                             <span class="at">reporting_thresholds =</span> reporting_thresholds)</span></code></pre></div>
+<pre><code>## [1] 0.9252937 5.9557503</code></pre>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GenPareto_ML_Estimator_Alpha</span>(losses, <span class="dv">1000</span>, </span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">reporting_thresholds =</span> reporting_thresholds, </span>
+<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">is.censored =</span> censored)</span></code></pre></div>
+<pre><code>## [1] 1.019572 1.966330</code></pre>
+</div>
+<div id="truncation-2" class="section level3">
+<h3>Truncation</h3>
+<p>Let <span class="math inline">\(X\sim \text{GenPareto}(t, \alpha_\text{ini}, \alpha_\text{tail})\)</span> and <span class="math inline">\(T&gt;t\)</span>. Then <span class="math inline">\(X|(X&lt;T)\)</span> has a <em>truncated generalized Pareto distribution</em>. The Pareto functions mentioned above are also available for the truncated generalized Pareto distribution.</p>
+</div>
+</div>
+<div id="pgp_models-panjer-generalized-pareto-models" class="section level2">
+<h2>PGP_Models (Panjer &amp; Generalized Pareto Models)</h2>
+<p>A <code>PGP_Model</code> object contains the information required to specify a collective model with a Panjer distributed claim count and a generalized Pareto distributed severity.</p>
+<p><strong>Claim count distribution:</strong> Like in a <code>PPP_Model</code> the claim count distribution from the Panjer class is specified by the expected frequency <span class="math inline">\(E(N)\)</span> (attribute <code>FQ</code> of the object) and the dispersion <span class="math inline">\(D(N):=Var(N)/E(N)\)</span> (attribute <code>dispersion</code> of the object).</p>
+<p><strong>Severity distribution:</strong> The generalized Pareto distribution is specified by the parameters <code>t</code>, <code>alpha_ini</code>, <code>alpha_tail</code> and <code>truncation</code>.</p>
+<p>A <code>PPP_Model</code> object can be created using the constructor function:</p>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>PGPM <span class="ot">&lt;-</span> <span class="fu">PGP_Model</span>(<span class="at">FQ =</span> <span class="dv">2</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>, </span>
+<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">truncation =</span> <span class="dv">10000</span>, <span class="at">dispersion =</span> <span class="fl">1.5</span>)</span>
+<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>PGPM</span></code></pre></div>
+<pre><code>## 
+## Panjer &amp; Generalized Pareto model
+## 
+## Collective model with a Negative Binomial distribution for the claim count and a generalized Pareto distributed severity.
+## 
+## Negative Binomial Distribution:
+## Expected Frequency:   2
+## Dispersion:           1.5 (i.e. contagion = 0.25)
+## Generalized Pareto Distribution:
+## Threshold:            1000
+## alpha_ini:            1
+## alpha_tail:           2
+## Truncation:           10000
+## 
+## Status:               0
+## Comments:             OK</code></pre>
+<div id="methods-for-pgp_models" class="section level3">
+<h3>Methods for PGP_Models</h3>
+<p>For PGP_Models the same methods are available as for PPP_Models:</p>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>PGPM <span class="ot">&lt;-</span> <span class="fu">PGP_Model</span>(<span class="at">FQ =</span> <span class="dv">2</span>, <span class="at">t =</span> <span class="dv">1000</span>, <span class="at">alpha_ini =</span> <span class="dv">1</span>, <span class="at">alpha_tail =</span> <span class="dv">2</span>, </span>
+<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">truncation =</span> <span class="dv">10000</span>, <span class="at">dispersion =</span> <span class="fl">1.5</span>)</span>
+<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Layer_Mean</span>(PGPM, <span class="dv">4000</span>, <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 2484.33</code></pre>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Layer_Sd</span>(PGPM, <span class="dv">4000</span>, <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 2756.15</code></pre>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Layer_Var</span>(PGPM, <span class="dv">4000</span>, <span class="dv">1000</span>)</span></code></pre></div>
+<pre><code>## [1] 7596365</code></pre>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">5000</span>, <span class="dv">10000</span>, <span class="cn">Inf</span>)</span>
+<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Excess_Frequency</span>(PGPM, thresholds)</span></code></pre></div>
+<pre><code>## [1] 2.0000000 2.0000000 0.8509022 0.1614435 0.0000000 0.0000000</code></pre>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Simulate_Losses</span>(PGPM, <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##           [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]
+##  [1,] 1310.443      NaN      NaN      NaN      NaN      NaN      NaN      NaN
+##  [2,] 1214.526      NaN      NaN      NaN      NaN      NaN      NaN      NaN
+##  [3,] 2514.700 7414.509 2257.355 1244.038      NaN      NaN      NaN      NaN
+##  [4,] 1536.156 6446.500      NaN      NaN      NaN      NaN      NaN      NaN
+##  [5,] 1036.202      NaN      NaN      NaN      NaN      NaN      NaN      NaN
+##  [6,] 5796.889 1070.094      NaN      NaN      NaN      NaN      NaN      NaN
+##  [7,] 1077.691 1842.969 1743.331 2260.656 1755.392 1136.347 1157.267 1583.067
+##  [8,] 1001.108 1693.973      NaN      NaN      NaN      NaN      NaN      NaN
+##  [9,] 1314.339 4918.383 2005.459 2438.007      NaN      NaN      NaN      NaN
+## [10,]      NaN      NaN      NaN      NaN      NaN      NaN      NaN      NaN</code></pre>
+</div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Fackler, M. (2013) Reinventing Pareto: Fits for both small and large losses. ASTIN Colloquium Den Haag</p>
+<p>Johnson, N.L., and Kotz, S. (1970) Continuous Univariate Distributions-I. Houghton Mifflin Co</p>
+<p>Philbrick, S.W. (1985) A Practical Guide to the Single Parameter Pareto Distribution. PCAS LXXII: 44–84</p>
+<p>Riegel, U. (2008) Generalizations of common ILF models. Bl&quot;{a}tter der DGVFM 29: 45–71</p>
+<p>Riegel, U. (2018) Matching tower information with piecewise Pareto. European Actuarial Journal 8(2): 437–460</p>
+<p>Schmutz, M., and Doerr, R.R. (1998) Das Pareto-Modell in der Sach-Rueckversicherung. Formeln und Anwendungen. Swiss Re Publications, Zuerich</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
