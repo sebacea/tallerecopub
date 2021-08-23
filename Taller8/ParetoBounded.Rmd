@@ -1,0 +1,31 @@
+---
+title: "Bounded Pareto distribution"
+author: "S. Cea"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(Pareto)
+# rPareto(n, t, alpha, truncation = NULL)
+par <- rPareto(100, 1, 2, 2)-1
+# plot(par, xlab = "x", ylab = "PDF(x)")
+summary(par)
+```
+
+```{r}
+hist(par)
+```
+
+## [80-20 rule](https://en.wikipedia.org/wiki/Pareto_distribution)
+
+>The Pareto principle or "80-20 rule" stating that 80% of outcomes
+>are due to 20% of causes was named in honour of Pareto,
+>but the concepts are distinct, and only Pareto distributions
+>with shape value (α) of log45 ≈ 1.16 precisely reflect it.
+

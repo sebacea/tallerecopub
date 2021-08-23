@@ -1,0 +1,95 @@
+---
+title: "Symbolic Computation"
+author: "Cea"
+date: "8/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(reticulate)
+# Use other python
+# use_python("/home/sebastian/.pyenv/shims/python")
+# Check python config
+# First time it ask to install miniconda
+# py_config()
+# Command line python
+# repl_python()
+# Verify conda environments
+# conda_list()
+# indicate that we want to use a specific condaenv
+# use_condaenv("r-reticulate")
+# Install package in default conda environment "r-reticulate"
+# py_install("pandas")
+# py_install("time")
+# py_install("matplotlib")
+# Unable to install "math" the following
+# py_install("math")
+# py_install("sympy")
+# py_install("scipy")
+# Install package in specific environment "environment-name"
+# virtualenv_install("environment-name", "scipy")
+# Problem: 
+# QStandardPaths: XDG_RUNTIME_DIR not set, defaulting to '/tmp/runtime-sebastian'
+# No protocol specified
+# qt.qpa.screen: QXcbConnection: Could not connect to display :0
+# Could not connect to any X display.
+# Solution found on https://community.rstudio.com/t/how-to-display-the-plot-in-the-python-chunk/22039/2
+matplotlib <- import("matplotlib")
+matplotlib$use("Agg", force = TRUE)
+```
+
+## Cálculo simbólico
+
+```{python}
+from sympy import *
+x, y = symbols('x y')
+expr = x + 2*y
+x*(expr + 1 - x) 
+# Expandimos la expresión anterior
+expand(x*(expr + 1 - x) )
+# Factorizamos una nueva expresión
+factor(x**2+2*x*y)
+```
+
+### Resolver ecuaciones
+
+```{python}
+solve(0.3*4+0.2+0.2*7+0.3*x-4, x)
+# 0.3*4+0.2+0.2*7+0.3*6.9
+```
+
+
+### Nullspace
+
+```{python}
+from sympy import *
+# M = Matrix([[1-x, 2, 3, 0, 0], [4, 10, 0, 0, 1]])
+# V matrix Remark 3.4 
+M = Matrix([[0, 0, 0], [1, 0, 0],[-1, 0, 0], [-1, -1, 0],[1, 0, 1]])
+# M
+# M.nullspace()
+# M.rank()
+# # Primera coordenada
+# M.nullspace()[0]
+# M*M.nullspace()[1]
+# M*M.nullspace()[2]
+W = Matrix([[0, 0, 0], [1, 1, 0],[-1, 0, -1], [-1, -1, 0],[1, 0, 1]])
+# W.nullspace()
+z = Matrix(1,3,[1,-1,-1])
+W*z.transpose()
+W*M.nullspace()[0]
+```
+
+
+
+```{python}
+M = Matrix([[0, 0, 0], [1, 0, 0], [-1, 0, 0], [-1, -1, 0], [1, 0, 1]])
+M
+M.rank()
+M.nullspace()
+# Primera coordenada
+M.nullspace()[0]
+# M*M.nullspace()[1]
+# M*M.nullspace()[2]
+````
