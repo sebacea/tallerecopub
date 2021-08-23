@@ -27,6 +27,7 @@ knitr::opts_chunk$set(echo = TRUE)
   - [Script en formato Markdown por traducir]()
 - [Desigualdad en América Latina](Taller2/WelfareIneqLatam.Rmd)
 
+
 ## Taller 3
 
 - [Diagramas](Taller3/Diagramas.Rmd)
