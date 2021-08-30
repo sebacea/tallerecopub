@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 - Plantilla para argumentos semanales
    - [Archivo fuente](Plantillas/Argumento.Rmd)
+   - [Presentación](Plantillas/Presentacion.Rmd)
    - [Base de datos bibliografía](Plantillas/referencias.bib)
    - [Base de datos figura](Plantillas/data.RData)
    - [PDF resultante del compilar archivo fuente](/Plantillas/Argumento.pdf)

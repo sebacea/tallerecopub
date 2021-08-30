@@ -1,0 +1,67 @@
+---
+title: ' Título proyecto '
+subtitle: "Subtitulo"
+author: "Autor UANDES"
+date: "Fecha inicial, versión última: `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: ["style.css"]
+---
+
+name: panorama
+class: split-four with-border border-white
+
+.row.bg-light-green.white[.content.vmiddle[
+# Panorama 
+]]
+
+.row[.split-two[
+
+  .column[.content[
+
+
+- [Primer tema](#tema1)
+- Segundo...
+
+
+]]
+  .column[.content[
+
+
+- Otras cosas
+- bla bla
+
+]]
+
+]
+]
+
+???
+
+---
+name: tema1
+class: split-four with-border border-white
+
+.row.bg-light-green.white[.content.vmiddle[
+# Tema 1
+]]
+
+.row[.split-two[
+
+  .column[.content[
+
+bla bla bla
+]]
+  .column[.content[
+
+Columna 2
+
+]]
+
+]
+]
+
+???
+
+Comentarios
+

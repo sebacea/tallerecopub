@@ -5,6 +5,7 @@ Talleres Finanzas Sostenibles Cuantitativas
 
 -   Plantilla para argumentos semanales
     -   [Archivo fuente](Plantillas/Argumento.Rmd)
+    -   [Presentación](Plantillas/Presentacion.Rmd)
     -   [Base de datos bibliografía](Plantillas/referencias.bib)
     -   [Base de datos figura](Plantillas/data.RData)
     -   [PDF resultante del compilar archivo
@@ -34,14 +35,11 @@ Talleres Finanzas Sostenibles Cuantitativas
 
 ## Taller 4
 
-
 -   [ETL Bienestar Chile](../Taller4/Chile.Rmd)
-
 
 ## Taller 5
 
 -   [Cómputo simbólico](Taller5/Verifications.Rmd)
-
 
 ## Taller 6
 
@@ -54,4 +52,3 @@ Talleres Finanzas Sostenibles Cuantitativas
 ## Taller 8
 
 -   [Pareto Distribution](Taller8/Pareto.Rmd)
-
